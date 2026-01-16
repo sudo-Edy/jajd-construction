@@ -26,3 +26,10 @@ dist-ssr
 # Large media files
 public/videos/*.mp4
 *.mp4
+
+# Environment variables (NEVER commit!)
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
