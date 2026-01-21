@@ -156,6 +156,7 @@ app.use((req: Request, res: Response) => {
 
 // Start Server
 app.listen(PORT, "0.0.0.0", () => {
+  console.log("🌍 Server bound to 0.0.0.0");
   console.log(`🚀 Backend running on port ${PORT}`);
   console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
   console.log(`📨 Lead endpoint: POST http://0.0.0.0:${PORT}/api/lead`);
