@@ -7,12 +7,15 @@ export default defineConfig(({ mode }) => {
     return {
       server: {
         port: 3000,
-        host: '0.0.0.0',
+        host: 'localhost',
         proxy: {
           '/api': {
             target: 'http://localhost:5001',
             changeOrigin: true,
-            rewrite: (path) => path.replace(/^\/api/, '/api'),
+            rewrite: (path) => {
+              // /api/lead -> /api/lead
+              return path;
+            }
           }
         }
       },

@@ -10,10 +10,24 @@ export interface LeadPayload {
   size: string;
 }
 
-// Use /api proxy for local dev, or direct URL for production
-const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
-  ? '/api' 
-  : (process.env.VITE_API_URL || 'http://localhost:5001');
+// Determine API base URL based on environment
+const getAPIBaseURL = () => {
+  if (typeof window === 'undefined') {
+    return process.env.VITE_API_URL || 'http://localhost:5001';
+  }
+
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (isLocalhost) {
+    // Use /api proxy for local dev
+    return '/api';
+  } else {
+    // Use full URL for production
+    return process.env.VITE_API_URL || 'http://localhost:5001';
+  }
+};
+
+const API_BASE_URL = getAPIBaseURL();
 
 export const submitLead = async (payload: LeadPayload): Promise<{ success: boolean; message: string }> => {
   try {
