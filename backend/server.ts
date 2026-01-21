@@ -14,8 +14,9 @@ const corsOptions = {
     'http://localhost:3000',
     'http://localhost:5173',
     'https://jajdconstruction.com',
-    'https://jajd-construction.vercel.app',
-    /\.vercel\.app$/
+    'https://jajd-construction-29z4bjib9-sudo-edys-projects.vercel.app',
+    /\.vercel\.app$/,
+    /\.railway\.app$/
   ],
   credentials: true,
   optionsSuccessStatus: 200,
