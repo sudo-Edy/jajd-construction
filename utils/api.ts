@@ -16,10 +16,10 @@ const getAPIBaseURL = () => {
   
   if (isLocalhost) {
     // Use local dev server
-    return 'http://localhost:3000';
+    return 'http://localhost:5001';
   } else {
     // Use full URL for production (from env variable)
-    return process.env.VITE_API_URL || 'http://localhost:3000';
+    return process.env.VITE_API_URL || 'http://localhost:5001';
   }
 };
 
