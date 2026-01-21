@@ -1,12 +1,23 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 5001;
+const PORT = Number(process.env.PORT) || 5001;
+
+// Resend Email Configuration
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+const RECEIVER_EMAIL = process.env.RECEIVER_EMAIL || '';
+const COMPANY_NAME = process.env.COMPANY_NAME || 'JAJD Construction';
+
+console.log('🚀 Starting JAJD Backend Server...');
+console.log('📧 Email Service: Resend');
+console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
 
 // Middleware - CORS must be first
 const corsOptions = {
@@ -25,42 +36,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-console.log('🚀 Starting JAJD Backend Server...');
-console.log('📧 Email Service:', process.env.EMAIL_SERVICE || 'gmail');
-console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
-
-// Email Transporter Configuration
-let transporter: any;
-let emailReady = false;
-
-// Gmail SMTP Configuration (TLS on port 587)
-transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use TLS (false), not SSL (true)
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 20000,
-});
-
-// Verify email connection on startup (non-blocking)
+// Verify Resend API key on startup (non-blocking)
 (async () => {
-  try {
-    await transporter.verify();
-    emailReady = true;
-    console.log('✅ Email transporter verified and ready');
-  } catch (err) {
-    console.error('⚠️  Email transporter unavailable — backend will continue running');
-    console.error('  Reason:', err instanceof Error ? err.message : String(err));
-    console.error('  Leads will be received but emails may not send.');
-    emailReady = false;
+  if (process.env.RESEND_API_KEY) {
+    console.log('✅ Resend API key configured');
+  } else {
+    console.error('⚠️  RESEND_API_KEY missing — emails will not send');
   }
 })();
 
@@ -95,66 +76,61 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       });
     }
 
-    const receiverEmail = process.env.RECEIVER_EMAIL || 'concierge@jajdbuild.com';
-    const companyName = process.env.COMPANY_NAME || 'JAJD Construction';
+    const receiverEmail = RECEIVER_EMAIL;
+    const companyName = COMPANY_NAME;
 
-    // Email to Company (Admin)
-    const adminEmailContent = `
-      <h2>New Lead Submission</h2>
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
-      <p><strong>ZIP Code:</strong> ${zip}</p>
-      <p><strong>Property Type:</strong> ${property}</p>
-      <p><strong>Project Type:</strong> ${project}</p>
-      <p><strong>Project Size:</strong> ${size}</p>
-      <hr />
-      <p><small>Submitted at: ${new Date().toLocaleString()}</small></p>
-    `;
+    console.log('📧 Processing lead email...');
 
-    // Email to Customer
-    const customerEmailContent = `
-      <h2>Thank you for your inquiry, ${name}!</h2>
-      <p>We've received your project details and will review them shortly.</p>
-      <p><strong>Your Information:</strong></p>
-      <ul>
-        <li>Property Type: ${property}</li>
-        <li>Project Type: ${project}</li>
-        <li>ZIP Code: ${zip}</li>
-      </ul>
-      <p>Our team will contact you within 24 hours at <strong>${phone}</strong> with your personalized estimate.</p>
-      <p>If you have any questions in the meantime, feel free to reach out.</p>
-      <br />
-      <p>Best regards,<br/><strong>${companyName}</strong></p>
-    `;
-
-    console.log('📧 Attempting to send emails...');
-    
-    // Try to send emails, but don't fail the request if they don't send
+    // Try to send emails via Resend, but don't fail the request if they don't send
     try {
-      // Send admin notification
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: receiverEmail,
-        subject: `New Lead: ${name} - ${property} ${project}`,
-        html: adminEmailContent,
-      });
-      console.log('✅ Admin email sent to:', receiverEmail);
-    } catch (emailErr) {
-      console.error('⚠️  Failed to send admin email:', emailErr instanceof Error ? emailErr.message : emailErr);
-    }
+      if (!process.env.RESEND_API_KEY) {
+        console.error('⚠️  RESEND_API_KEY missing — skipping email send');
+      } else {
+        // Send admin notification
+        await resend.emails.send({
+          from: EMAIL_FROM,
+          to: receiverEmail,
+          subject: `New Lead: ${name} - ${property} ${project}`,
+          html: `
+            <h2>New Lead Submission</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>ZIP Code:</strong> ${zip}</p>
+            <p><strong>Property Type:</strong> ${property}</p>
+            <p><strong>Project Type:</strong> ${project}</p>
+            <p><strong>Project Size:</strong> ${size}</p>
+            <hr />
+            <p><small>Submitted at: ${new Date().toLocaleString()}</small></p>
+          `,
+          replyTo: email,
+        });
+        console.log('✅ Admin email sent to:', receiverEmail);
 
-    try {
-      // Send customer confirmation
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: `Estimate Request Received - ${companyName}`,
-        html: customerEmailContent,
-      });
-      console.log('✅ Customer confirmation email sent to:', email);
+        // Send customer confirmation
+        await resend.emails.send({
+          from: EMAIL_FROM,
+          to: email,
+          subject: `We received your request - ${companyName}`,
+          html: `
+            <h2>Thank you for your inquiry, ${name}!</h2>
+            <p>We've received your project details and will review them shortly.</p>
+            <p><strong>Your Information:</strong></p>
+            <ul>
+              <li>Property Type: ${property}</li>
+              <li>Project Type: ${project}</li>
+              <li>ZIP Code: ${zip}</li>
+            </ul>
+            <p>Our team will contact you within 24 hours at <strong>${phone}</strong> with your personalized estimate.</p>
+            <p>If you have any questions in the meantime, feel free to reach out.</p>
+            <br />
+            <p>Best regards,<br/><strong>${companyName}</strong></p>
+          `,
+        });
+        console.log('✅ Customer confirmation email sent to:', email);
+      }
     } catch (emailErr) {
-      console.error('⚠️  Failed to send customer email:', emailErr instanceof Error ? emailErr.message : emailErr);
+      console.error('⚠️  Resend email failed:', emailErr instanceof Error ? emailErr.message : emailErr);
     }
 
     // Always return success to frontend
