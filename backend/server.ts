@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app: Express = express();
-const PORT = Number(process.env.PORT) || 5001;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Resend Email Configuration
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -155,8 +155,8 @@ app.use((req: Request, res: Response) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`✅ Backend running on port ${PORT}`);
-  console.log(`📊 Health check: http://localhost:${PORT}/health`);
-  console.log(`📨 Lead endpoint: POST http://localhost:${PORT}/api/lead`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
+  console.log(`📨 Lead endpoint: POST http://0.0.0.0:${PORT}/api/lead`);
 });
