@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware - CORS must be first
 const corsOptions = {
@@ -45,12 +45,15 @@ transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 20000,
 });
 
 // Verify email connection on startup (non-blocking)
 (async () => {
   try {
-    await transporter.verify({ timeout: 10000 });
+    await transporter.verify();
     emailReady = true;
     console.log('✅ Email transporter verified and ready');
   } catch (err) {
@@ -176,8 +179,8 @@ app.use((req: Request, res: Response) => {
 });
 
 // Start Server
-app.listen(port, () => {
-  console.log(`✅ Backend running at http://localhost:${port}`);
-  console.log(`📊 Health check: http://localhost:${port}/health`);
-  console.log(`📨 Lead endpoint: POST http://localhost:${port}/api/lead`);
+app.listen(PORT, () => {
+  console.log(`✅ Backend running on port ${PORT}`);
+  console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  console.log(`📨 Lead endpoint: POST http://localhost:${PORT}/api/lead`);
 });
