@@ -8,9 +8,25 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Middleware - CORS must be first
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://jajdconstruction.com',
+    'https://jajd-construction.vercel.app',
+    /\.vercel\.app$/
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+console.log('🚀 Starting JAJD Backend Server...');
+console.log('📧 Email Service:', process.env.EMAIL_SERVICE || 'gmail');
+console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
 
 // Email Transporter Configuration
 let transporter: any;
@@ -37,9 +53,13 @@ if (process.env.EMAIL_SERVICE === 'SendGrid') {
 }
 
 // Verify email connection on startup
-transporter.verify((error, success) => {
+transporter.verify((error: any, success: any) => {
   if (error) {
     console.error('❌ Email configuration error:', error);
+    console.error('⚠️  Please check your .env file:');
+    console.error('  - EMAIL_USER:', process.env.EMAIL_USER ? '✓ Set' : '✗ Missing');
+    console.error('  - EMAIL_PASSWORD:', process.env.EMAIL_PASSWORD ? '✓ Set' : '✗ Missing');
+    console.error('  - EMAIL_SERVICE:', process.env.EMAIL_SERVICE || 'gmail');
   } else {
     console.log('✅ Email service ready:', success);
   }
@@ -58,16 +78,22 @@ interface LeadPayload {
 
 // Routes
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'Backend is running' });
+  res.json({ status: 'Backend is running', timestamp: new Date().toISOString() });
 });
 
 app.post('/api/lead', async (req: Request, res: Response) => {
   try {
     const { name, email, phone, zip, property, project, size }: LeadPayload = req.body;
 
+    console.log('📨 New lead received:', name);
+
     // Validate required fields
     if (!name || !email || !phone || !zip) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
+      console.warn('⚠️  Missing required fields:', { name, email, phone, zip });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Missing required fields: name, email, phone, zip' 
+      });
     }
 
     const receiverEmail = process.env.RECEIVER_EMAIL || 'concierge@jajdbuild.com';
@@ -103,6 +129,7 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       <p>Best regards,<br/><strong>${companyName}</strong></p>
     `;
 
+    console.log('📧 Sending admin email to:', receiverEmail);
     // Send admin notification
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -110,7 +137,9 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       subject: `New Lead: ${name} - ${property} ${project}`,
       html: adminEmailContent,
     });
+    console.log('✅ Admin email sent');
 
+    console.log('📧 Sending customer confirmation to:', email);
     // Send customer confirmation
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -118,6 +147,7 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       subject: `Estimate Request Received - ${companyName}`,
       html: customerEmailContent,
     });
+    console.log('✅ Customer email sent');
 
     res.status(200).json({
       success: true,
@@ -125,19 +155,22 @@ app.post('/api/lead', async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('❌ Error submitting lead:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     res.status(500).json({
       success: false,
-      message: 'Failed to submit lead. Please try again later.',
+      message: `Failed to submit lead: ${errorMessage}. Please check backend logs.`,
     });
   }
 });
 
 // 404 Handler
 app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ success: false, message: 'Route not found' });
 });
 
 // Start Server
 app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`✅ Backend running at http://localhost:${port}`);
+  console.log(`📊 Health check: http://localhost:${port}/health`);
+  console.log(`📨 Lead endpoint: POST http://localhost:${port}/api/lead`);
 });

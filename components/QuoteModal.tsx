@@ -12,6 +12,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const modalRef = useRef<HTMLDivElement>(null);
   
   const [formData, setFormData] = useState({
@@ -30,6 +31,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
     if (isOpen) {
       setStep(1);
       setSubmitted(false);
+      setError('');
       setFormData(prev => ({ ...prev, zip: initialZip || prev.zip }));
       document.body.style.overflow = 'hidden';
     } else {
@@ -48,13 +50,18 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     if (step < 3) {
       setStep(step + 1);
     } else {
       setLoading(true);
       const result = await submitLead(formData);
       setLoading(false);
-      if (result.success) setSubmitted(true);
+      if (result.success) {
+        setSubmitted(true);
+      } else {
+        setError(result.message || 'Failed to submit. Please try again.');
+      }
     }
   };
 
@@ -88,6 +95,12 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                 <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${step >= i ? 'bg-[#FACC15]' : 'bg-slate-100'}`} />
               ))}
             </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-600 text-sm font-bold">{error}</p>
+              </div>
+            )}
 
             <div className="space-y-2 mb-10">
               <h2 id="modal-title" className="text-3xl font-black text-slate-900">
