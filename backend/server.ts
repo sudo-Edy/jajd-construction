@@ -8,8 +8,11 @@ dotenv.config();
 const app: Express = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-// Resend Email Configuration
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Resend Email Configuration (only initialize if API key exists)
+let resend: any = null;
+if (process.env.RESEND_API_KEY) {
+  resend = new Resend(process.env.RESEND_API_KEY);
+}
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 const RECEIVER_EMAIL = process.env.RECEIVER_EMAIL || '';
@@ -83,7 +86,7 @@ app.post('/api/lead', async (req: Request, res: Response) => {
 
     // Try to send emails via Resend, but don't fail the request if they don't send
     try {
-      if (!process.env.RESEND_API_KEY) {
+      if (!resend) {
         console.error('⚠️  RESEND_API_KEY missing — skipping email send');
       } else {
         // Send admin notification
