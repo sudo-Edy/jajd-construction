@@ -20,7 +20,6 @@ export const submitLead = async (payload: LeadPayload): Promise<{ success: boole
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(payload),
     });
 
