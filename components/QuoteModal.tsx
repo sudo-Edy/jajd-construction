@@ -22,8 +22,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
     zip: initialZip || '',
     name: '',
     email: '',
-    phone: '',
-    date: ''
+    phone: ''
   });
 
   // Reset modal state when opened
@@ -48,9 +47,44 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  const validateStep = (): boolean => {
+    if (step === 1) {
+      if (!formData.zip || formData.zip.length !== 5) {
+        setError('Please enter a valid 5-digit ZIP code');
+        return false;
+      }
+    }
+    if (step === 3) {
+      if (!formData.name.trim()) {
+        setError('Name is required');
+        return false;
+      }
+      if (!formData.email.trim()) {
+        setError('Email is required');
+        return false;
+      }
+      if (!formData.phone.trim()) {
+        setError('Phone number is required');
+        return false;
+      }
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        setError('Please enter a valid email address');
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!validateStep()) {
+      return;
+    }
+
     if (step < 3) {
       setStep(step + 1);
     } else {

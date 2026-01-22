@@ -40,7 +40,24 @@ export const submitLead = async (payload: LeadPayload): Promise<{ success: boole
     });
 
     console.log('📊 Response status:', response.status);
-    const data = await response.json();
+    
+    let data: any;
+    try {
+      data = await response.json();
+    } catch (parseError) {
+      console.error('❌ Failed to parse response:', parseError);
+      if (!response.ok) {
+        return {
+          success: false,
+          message: `Server error: ${response.status} ${response.statusText}`,
+        };
+      }
+      return {
+        success: true,
+        message: 'Lead submitted successfully.',
+      };
+    }
+
     console.log('✅ Response data:', data);
 
     if (!response.ok) {
@@ -49,7 +66,7 @@ export const submitLead = async (payload: LeadPayload): Promise<{ success: boole
 
     return {
       success: true,
-      message: data.message || 'Lead submitted successfully. Check your email for confirmation.',
+      message: data.message || 'Lead submitted successfully. We will contact you within 24 hours.',
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to submit lead. Please try again.';
