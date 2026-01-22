@@ -42,6 +42,9 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             Built for Precision. <br />
             <span className="text-[#FACC15]">Mastered by JAJD.</span>
           </h1>
+          <p className="text-2xl text-white font-bold">
+            Reliable people & <span className="text-[#FACC15]">Construction Services.</span>
+          </p>
           <p className="text-xl text-white/70 max-w-lg leading-relaxed font-medium">
             Setting the global standard in residential and commercial construction management since 2012.
           </p>
