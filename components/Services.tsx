@@ -1,5 +1,5 @@
 import React from 'react';
-import { SERVICES } from '../data/siteData';
+import { SERVICES } from '../constants';
 import { ChevronRight } from 'lucide-react';
 
 interface ServicesProps {
