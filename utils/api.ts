@@ -1,5 +1,3 @@
-import { CONFIG } from '../config';
-
 export interface LeadPayload {
   name: string;
   email: string;
@@ -10,26 +8,18 @@ export interface LeadPayload {
   size: string;
 }
 
-// Determine API base URL based on environment
-const getAPIBaseURL = () => {
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  
-  if (isLocalhost) {
-    // Use local dev server
-    return 'http://localhost:5001';
-  } else {
-    // Use full URL for production (from env variable)
-    return process.env.VITE_API_URL || 'http://localhost:5001';
-  }
-};
+// API base URL - Production endpoint on Railway
+const API_BASE = 'https://celebrated-beauty-production.up.railway.app';
 
-const API_BASE_URL = getAPIBaseURL();
+// Log API configuration once on page load
+if (typeof window !== 'undefined') {
+  console.log('🔌 API_BASE:', API_BASE);
+}
 
 export const submitLead = async (payload: LeadPayload): Promise<{ success: boolean; message: string }> => {
   try {
-    const endpoint = `${API_BASE_URL}/api/lead`;
-    console.log('🚀 Submitting lead to:', endpoint);
-    console.log('📦 Payload:', payload);
+    const endpoint = `${API_BASE}/api/lead`;
+    console.log('📨 Submitting lead to:', endpoint);
     
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -39,34 +29,24 @@ export const submitLead = async (payload: LeadPayload): Promise<{ success: boole
       body: JSON.stringify(payload),
     });
 
-    console.log('📊 Response status:', response.status);
-    
+    // Always try to parse response as text first to handle errors gracefully
+    const text = await response.text();
     let data: any;
     try {
-      data = await response.json();
-    } catch (parseError) {
-      console.error('❌ Failed to parse response:', parseError);
-      if (!response.ok) {
-        return {
-          success: false,
-          message: `Server error: ${response.status} ${response.statusText}`,
-        };
-      }
-      return {
-        success: true,
-        message: 'Lead submitted successfully.',
-      };
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
     }
 
-    console.log('✅ Response data:', data);
+    console.log('📊 Response status:', response.status, 'Data:', data);
 
     if (!response.ok) {
-      throw new Error(data.message || `Failed to submit lead: ${response.status}`);
+      throw new Error(data?.message || `Request failed: ${response.status}`);
     }
 
     return {
       success: true,
-      message: data.message || 'Lead submitted successfully. We will contact you within 24 hours.',
+      message: data.message || 'Lead submitted successfully. Check your email for confirmation.',
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to submit lead. Please try again.';
