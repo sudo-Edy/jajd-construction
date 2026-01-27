@@ -19,7 +19,8 @@
 - [ ] Click: "Variables" tab
 - [ ] Update these variables:
   - `EMAIL_FROM` = `leads@jajdconstruction.com`
-  - `RECEIVER_EMAIL` = `jajdconstruction@gmail.com`
+  - `LEADS_TO_EMAIL` = `jajdconstruction@gmail.com` (Primary)
+  - `RECEIVER_EMAIL` = `jajdconstruction@gmail.com` (Fallback)
   - Keep `RESEND_API_KEY` unchanged
 - [ ] Click: "Deploy" or "Restart"
 
