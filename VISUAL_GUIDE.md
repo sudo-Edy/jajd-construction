@@ -277,7 +277,7 @@ Backend Console:
     zip: "10001" 
   }
   📧 Processing lead email...
-  ✅ Admin email sent to: concierge@jajdbuild.com
+  ✅ Admin email sent to: jajdconstruction@gmail.com
   ✅ Customer confirmation email sent to: john@example.com
 ```
 

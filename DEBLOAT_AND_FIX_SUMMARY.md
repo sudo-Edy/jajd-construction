@@ -153,7 +153,7 @@ Environment Variables:
 Environment Variables:
 - RESEND_API_KEY=<your-key>
 - EMAIL_FROM=noreply@yourdomain.com
-- RECEIVER_EMAIL=concierge@jajdbuild.com
+- RECEIVER_EMAIL=jajdconstruction@gmail.com
 - COMPANY_NAME=JAJD Construction
 - PORT=5001
 - NODE_ENV=production
@@ -196,7 +196,7 @@ Environment Variables:
 ```
 📩 Lead received: { name, email, phone, zip }
 📧 Processing lead email...
-✅ Admin email sent to: concierge@jajdbuild.com
+✅ Admin email sent to: jajdconstruction@gmail.com
 ✅ Customer confirmation email sent to: user@example.com
 ```
 

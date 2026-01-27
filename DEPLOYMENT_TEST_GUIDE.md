@@ -64,7 +64,7 @@ VITE_API_URL=https://jajd-construction-production.up.railway.app
 ```
 RESEND_API_KEY=your-actual-key
 EMAIL_FROM=noreply@yourdomain.com
-RECEIVER_EMAIL=concierge@jajdbuild.com
+RECEIVER_EMAIL=jajdconstruction@gmail.com
 COMPANY_NAME=JAJD Construction
 PORT=5001
 NODE_ENV=production
@@ -160,7 +160,7 @@ This is **expected** if `RESEND_API_KEY` is not set or invalid.
 ```
 📩 Lead received: { name: "John Doe", email: "john@example.com", phone: "555-1234", zip: "10001" }
 📧 Processing lead email...
-✅ Admin email sent to: concierge@jajdbuild.com
+✅ Admin email sent to: jajdconstruction@gmail.com
 ✅ Customer confirmation email sent to: john@example.com
 ```
 

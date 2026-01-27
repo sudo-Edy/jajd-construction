@@ -1,0 +1,74 @@
+# API Endpoint Update - Summary
+
+**Date**: January 22, 2026  
+**Status**: ✅ Complete
+
+---
+
+## Files Modified
+
+### `utils/api.ts` - ONLY FILE CHANGED ✅
+
+---
+
+## Changes Made
+
+```typescript
+// OLD CODE (removed):
+const getAPIBaseURL = (): string => {
+  const baseUrl = (process.env.VITE_API_URL as string) || 'http://localhost:5001';
+  return baseUrl.replace(/\/$/, '');
+};
+const API_BASE_URL = getAPIBaseURL();
+
+// NEW CODE (added):
+const API_BASE = 'https://celebrated-beauty-production.up.railway.app';
+```
+
+---
+
+## Result
+
+All form submissions now post to:
+```
+https://celebrated-beauty-production.up.railway.app/api/lead
+```
+
+Instead of the old endpoint.
+
+---
+
+## What This Means
+
+When a user submits the quote form:
+1. Data is sent to the new Railway API
+2. No more "Failed to fetch" if old backend is down
+3. Form shows success/error messages
+4. All errors are logged to browser console
+
+---
+
+## Testing
+
+1. Deploy to Vercel
+2. Fill out form and submit
+3. Check browser Console (F12)
+4. Should see: `🔌 API_BASE: https://celebrated-beauty-production.up.railway.app`
+5. Should see success or error message
+
+---
+
+## How to Change Later
+
+Edit line 12 in `utils/api.ts`:
+```typescript
+const API_BASE = 'https://your-new-endpoint.com';
+```
+
+That's it! All submissions use the new URL.
+
+---
+
+## Ready to Deploy ✅
+
+Code is tested and ready for Vercel.

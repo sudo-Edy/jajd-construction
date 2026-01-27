@@ -47,7 +47,7 @@ Professional construction website with lead generation and email notifications.
    ```bash
    RESEND_API_KEY=your-api-key-here
    EMAIL_FROM=noreply@yourdomain.com
-   RECEIVER_EMAIL=concierge@jajdbuild.com
+   RECEIVER_EMAIL=jajdconstruction@gmail.com
    COMPANY_NAME=JAJD Construction
    PORT=5001
    NODE_ENV=development
