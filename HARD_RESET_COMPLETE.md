@@ -164,7 +164,7 @@ NODE_ENV=production
 2. Add to `backend/.env`:
    ```
    RESEND_API_KEY=your_api_key_here
-   EMAIL_FROM=noreply@jajdbuild.com
+   EMAIL_FROM=leads@jajdconstruction.com
    RECEIVER_EMAIL=jajdconstruction@gmail.com
    ```
 3. Import Resend in `server.ts`

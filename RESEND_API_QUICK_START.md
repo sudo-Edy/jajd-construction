@@ -17,12 +17,16 @@ Resend is a modern, developer-friendly email service perfect for transactional e
 
 2. FROM EMAIL (Sender)
    └─ Must be verified in Resend
-   └─ Example: noreply@jajdbuild.com
+   └─ Example: leads@jajdconstruction.com
    └─ Your email: ___________
 
 3. TO EMAIL (Where leads go)
    └─ Example: jajdconstruction@gmail.com
    └─ Your email: ___________
+
+4. FROM EMAIL (Sender domain)
+   └─ Example: leads@jajdconstruction.com
+   └─ Must be verified in Resend
 ```
 
 ### **Optional:**
@@ -72,6 +76,7 @@ npm run backend:dev
 
 ### **Admin Email**
 - **To:** jajdconstruction@gmail.com (your config)
+- **From:** leads@jajdconstruction.com (verified domain)
 - **Subject:** "New Lead: John Smith - JAJD Construction"
 - **Content:** Professional HTML table with all lead details
 - **Action:** Includes reminder to follow up within 24 hours
@@ -173,7 +178,7 @@ Modal closes
 ```bash
 # Backend/.env
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
-FROM_EMAIL=noreply@jajdbuild.com
+FROM_EMAIL=leads@jajdconstruction.com
 TO_EMAIL=jajdconstruction@gmail.com
 PORT=5001
 ```

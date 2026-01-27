@@ -54,7 +54,7 @@ Option 5: Other (Mailgun, Postmark, etc.)
    Example: jajdconstruction@gmail.com
 
 ✅ What email address should appear as sender?
-   Example: noreply@jajdbuild.com
+   Example: leads@jajdconstruction.com
 
 ✅ Should leads be saved to a database?
    Yes → Which database? (MongoDB, PostgreSQL, etc.)

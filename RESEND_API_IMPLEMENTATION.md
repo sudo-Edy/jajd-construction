@@ -24,8 +24,8 @@ Where to get it:
 ```
 FROM EMAIL (Sender):
   ├─ Must be verified in Resend dashboard
-  ├─ Usually: noreply@yourdomain.com
-  ├─ Or: JAJD Construction <noreply@jajdbuild.com>
+  ├─ Usually: leads@jajdconstruction.com
+  ├─ Or: contact@jajdconstruction.com
   └─ Your value: ___________
 
 TO EMAIL (Where leads go):
@@ -34,8 +34,12 @@ TO EMAIL (Where leads go):
   ├─ Or: sales@jajdbuild.com
   └─ Your value: ___________
 
-REPLY-TO EMAIL (Optional):
-  ├─ What email should users reply to
+FROM EMAIL (Sender Domain):
+  ├─ Must be verified in Resend
+  ├─ Usually: leads@jajdconstruction.com
+  ├─ Or: contact@jajdconstruction.com
+  └─ Your value: ___________
+```
   ├─ Usually: support@jajdbuild.com
   └─ Your value: ___________
 ```
@@ -88,8 +92,8 @@ Create or update `backend/.env`:
 ```bash
 # Resend Email Configuration
 RESEND_API_KEY=your_api_key_here
-FROM_EMAIL=noreply@jajdbuild.com
-TO_EMAIL=jajdconstruction@gmail.com
+EMAIL_FROM=leads@jajdconstruction.com
+RECEIVER_EMAIL=jajdconstruction@gmail.com
 ```
 
 ### **Step 3: Update Backend to Use Resend**
@@ -137,8 +141,8 @@ app.post("/api/lead", async (req, res) => {
 
     // Send email via Resend
     const result = await resend.emails.send({
-      from: process.env.FROM_EMAIL || "noreply@jajdbuild.com",
-      to: process.env.TO_EMAIL || "jajdconstruction@gmail.com",
+      from: process.env.EMAIL_FROM || "leads@jajdconstruction.com",
+      to: process.env.RECEIVER_EMAIL || "jajdconstruction@gmail.com",
       subject: `New Lead: ${name} - JAJD Construction`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -200,7 +204,7 @@ app.post("/api/lead", async (req, res) => {
 
     // (Optional) Send confirmation email to user
     await resend.emails.send({
-      from: process.env.FROM_EMAIL || "noreply@jajdbuild.com",
+      from: process.env.EMAIL_FROM || "leads@jajdconstruction.com",
       to: email,
       subject: "We Received Your Quote Request - JAJD Construction",
       html: `
@@ -324,8 +328,8 @@ Add dependency:
 ### **2. `backend/.env`** (NEW FILE)
 ```
 RESEND_API_KEY=re_xxxxxxxxxxxxx
-FROM_EMAIL=noreply@jajdbuild.com
-TO_EMAIL=jajdconstruction@gmail.com
+EMAIL_FROM=leads@jajdconstruction.com
+RECEIVER_EMAIL=jajdconstruction@gmail.com
 PORT=5001
 ```
 

@@ -31,7 +31,7 @@ VITE_API_URL=https://jajd-construction-production.up.railway.app
 #### Railway Backend Required Env Vars (Set in Railway Dashboard)
 ```
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxx  # Required for email sending
-EMAIL_FROM=noreply@yourdomain.com   # Verified sender email
+EMAIL_FROM=leads@jajdconstruction.com   # Verified sender domain
 RECEIVER_EMAIL=jajdconstruction@gmail.com  # Recipient for admin notifications
 COMPANY_NAME=JAJD Construction      # Company name for email templates
 NODE_ENV=production                 # Set to production

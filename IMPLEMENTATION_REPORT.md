@@ -116,7 +116,7 @@ app.post("/api/lead", (req, res) => {
 
 2. FROM EMAIL ADDRESS
    ├─ Sender email (must be verified in Resend)
-   ├─ Examples: noreply@jajdbuild.com or support@jajdbuild.com
+   ├─ Examples: leads@jajdconstruction.com or support@jajdbuild.com
    ├─ Time to get: Already know it
    └─ Current value: [AWAITING USER INPUT]
 
@@ -187,8 +187,8 @@ npm install resend
 ```bash
 # Resend Email API Configuration
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxx
-FROM_EMAIL=noreply@jajdbuild.com
-TO_EMAIL=jajdconstruction@gmail.com
+EMAIL_FROM=leads@jajdconstruction.com
+RECEIVER_EMAIL=jajdconstruction@gmail.com
 REPLY_TO_EMAIL=support@jajdbuild.com
 
 # Server Configuration
@@ -258,8 +258,8 @@ app.post("/api/lead", async (req, res) => {
 
     // ✅ Step 2: Send Admin Email via Resend
     const adminEmailResult = await resend.emails.send({
-      from: process.env.FROM_EMAIL || "noreply@jajdbuild.com",
-      to: process.env.TO_EMAIL || "jajdconstruction@gmail.com",
+      from: process.env.EMAIL_FROM || "leads@jajdconstruction.com",
+      to: process.env.RECEIVER_EMAIL || "jajdconstruction@gmail.com",
       replyTo: process.env.REPLY_TO_EMAIL || "support@jajdbuild.com",
       subject: `New Lead: ${name} - JAJD Construction`,
       html: `
@@ -339,7 +339,7 @@ app.post("/api/lead", async (req, res) => {
     // ✅ Step 4: Send User Confirmation Email (Optional)
     try {
       const userEmailResult = await resend.emails.send({
-        from: process.env.FROM_EMAIL || "noreply@jajdbuild.com",
+        from: process.env.EMAIL_FROM || "leads@jajdconstruction.com",
         to: email,
         subject: "We Received Your Quote Request - JAJD Construction",
         html: `
@@ -815,11 +815,11 @@ User email sent → Clear feedback to user → Happy customer
 1. RESEND_API_KEY
    └─ Get from: https://resend.com/dashboard → API Keys
 
-2. FROM_EMAIL
-   └─ Example: noreply@jajdbuild.com
+2. EMAIL_FROM
+   └─ Example: leads@jajdconstruction.com
    └─ Must be verified in Resend
 
-3. TO_EMAIL
+3. RECEIVER_EMAIL
    └─ Example: jajdconstruction@gmail.com
    └─ Where leads should go
 ```

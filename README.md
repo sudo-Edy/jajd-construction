@@ -46,7 +46,7 @@ Professional construction website with lead generation and email notifications.
 2. Create `.env`:
    ```bash
    RESEND_API_KEY=your-api-key-here
-   EMAIL_FROM=noreply@yourdomain.com
+   EMAIL_FROM=leads@jajdconstruction.com
    RECEIVER_EMAIL=jajdconstruction@gmail.com
    COMPANY_NAME=JAJD Construction
    PORT=5001

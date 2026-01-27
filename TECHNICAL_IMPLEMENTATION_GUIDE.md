@@ -129,7 +129,7 @@ console.log('📧 Processing lead email...');
 
 ```typescript
 // Get config from env
-const emailFrom = process.env.EMAIL_FROM;          // "onboarding@resend.dev"
+const emailFrom = process.env.EMAIL_FROM;          // "leads@jajdconstruction.com"
 const receiverEmail = process.env.RECEIVER_EMAIL;   // "jajdconstruction@gmail.com"
 const companyName = process.env.COMPANY_NAME;       // "JAJD Construction"
 
@@ -354,7 +354,7 @@ Content-Type: application/json
 | Variable | Scope | Example | Required | Source |
 |----------|-------|---------|----------|--------|
 | `RESEND_API_KEY` | Runtime | `re_xxxxxxxxxxxxxxxxxxxx` | Yes | resend.com API Keys |
-| `EMAIL_FROM` | Runtime | `onboarding@resend.dev` | Yes | Resend (verified sender) |
+| `EMAIL_FROM` | Runtime | `leads@jajdconstruction.com` | Yes | Verified domain sender |
 | `RECEIVER_EMAIL` | Runtime | `jajdconstruction@gmail.com` | Yes | Your email address |
 | `COMPANY_NAME` | Runtime | `JAJD Construction` | No | From config.ts or env |
 | `NODE_ENV` | Runtime | `production` | No | Set by Railway or manual |

@@ -161,7 +161,7 @@ VITE_API_URL=https://jajd-construction-production.up.railway.app
 
 + # Resend Email Service (what's actually in code)
 + RESEND_API_KEY=your-resend-api-key
-+ EMAIL_FROM=noreply@yourdomain.com
++ EMAIL_FROM=leads@jajdconstruction.com
 + RECEIVER_EMAIL=jajdconstruction@gmail.com
 
 - PORT=5000

@@ -29,7 +29,7 @@ VITE_API_URL=https://jajd-construction-production.up.railway.app
 In Railway dashboard, set environment variables:
 ```
 RESEND_API_KEY=sk_live_xxx
-EMAIL_FROM=noreply@yourdomain.com
+EMAIL_FROM=leads@jajdconstruction.com
 RECEIVER_EMAIL=jajdconstruction@gmail.com
 COMPANY_NAME=JAJD Construction
 PORT=5001
@@ -72,7 +72,7 @@ VITE_API_URL=https://jajd-construction-production.up.railway.app
 ### Railway (Backend)
 ```
 RESEND_API_KEY=sk_live_xxx
-EMAIL_FROM=noreply@yourdomain.com
+EMAIL_FROM=leads@jajdconstruction.com
 RECEIVER_EMAIL=jajdconstruction@gmail.com
 COMPANY_NAME=JAJD Construction
 PORT=5001

@@ -24,7 +24,7 @@
 ### Option B: Verify Custom Domain (for production)
 1. In Resend dashboard → **Domains**
 2. Click **"Add Domain"**
-3. Enter your domain (e.g., `noreply@yourdomain.com`)
+3. Enter your verified domain (e.g., `leads@jajdconstruction.com`)
 4. Add DNS records Resend provides
 5. Wait for verification (usually instant)
 6. Use verified email as `EMAIL_FROM`
@@ -40,7 +40,7 @@
 | Variable | Value | Notes |
 |----------|-------|-------|
 | `RESEND_API_KEY` | `re_xxxxx...` | From Step 1 |
-| `EMAIL_FROM` | `onboarding@resend.dev` | Or your verified domain |
+| `EMAIL_FROM` | `leads@jajdconstruction.com` | Verified domain sender |
 | `RECEIVER_EMAIL` | `jajdconstruction@gmail.com` | Your inbox (receives admin notifications) |
 | `COMPANY_NAME` | `JAJD Construction` | Optional (for email templates) |
 | `NODE_ENV` | `production` | Recommended for clarity |
