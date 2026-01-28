@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 export interface LeadPayload {
   name: string;
   email: string;
@@ -8,8 +10,10 @@ export interface LeadPayload {
   size: string;
 }
 
-// API base URL - Production endpoint on Railway
-const API_BASE = 'https://celebrated-beauty-production.up.railway.app';
+// API base URL - Controlled by Environment Variable
+// Falls back to production URL if env is missing (prevent hard crash)
+// Replaced dynamic `process.env.VITE_API_URL` with hardcoded fallback only if needed
+const API_BASE = (import.meta.env.VITE_API_URL as string) || 'https://celebrated-beauty-production.up.railway.app';
 
 // Log API configuration once on page load
 if (typeof window !== 'undefined') {
