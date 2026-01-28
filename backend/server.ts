@@ -15,7 +15,7 @@ if (process.env.RESEND_API_KEY) {
 }
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'leads@jajdconstruction.com';
-const RECEIVER_EMAIL = process.env.RECEIVER_EMAIL || 'jajdconstruction@gmail.com';
+const RECEIVER_EMAIL = process.env.LEADS_TO_EMAIL || process.env.RECEIVER_EMAIL || 'jajdconstruction@gmail.com';
 const COMPANY_NAME = process.env.COMPANY_NAME || 'JAJD Construction';
 
 console.log('🚀 Starting JAJD Backend Server...');
