@@ -15,7 +15,7 @@ if (process.env.RESEND_API_KEY) {
 }
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'leads@jajdconstruction.com';
-const RECEIVER_EMAIL = process.env.LEADS_TO_EMAIL || process.env.RECEIVER_EMAIL || 'jajdconstruction@gmail.com';
+const RECEIVER_EMAIL = process.env.RECEIVER_EMAIL || 'jajdconstruction@gmail.com';
 const COMPANY_NAME = process.env.COMPANY_NAME || 'JAJD Construction';
 
 console.log('🚀 Starting JAJD Backend Server...');
@@ -82,10 +82,21 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       });
     }
 
+    // Force usage of verified domain for Sender
+    // This solves the 403 error by ignoring any potential "onboarding" value in env vars
+    // while still respecting a valid custom env config if it matches the verified domain.
+    let senderEmail = process.env.EMAIL_FROM || 'leads@jajdconstruction.com';
+    
+    // Safety check: If env var accidentally has "onboarding", force it to verified domain
+    if (senderEmail.includes('onboarding@resend.dev')) {
+        console.warn('⚠️  Detected onboarding email in env var. Overriding to leads@jajdconstruction.com to prevent 403.');
+        senderEmail = 'leads@jajdconstruction.com';
+    }
+
     const receiverEmail = RECEIVER_EMAIL;
     const companyName = COMPANY_NAME;
 
-    console.log('📧 Processing lead email...');
+    console.log('📧 Processing lead email from:', senderEmail);
 
     // Try to send emails via Resend, but don't fail the request if they don't send
     try {
@@ -94,7 +105,7 @@ app.post('/api/lead', async (req: Request, res: Response) => {
       } else {
         // Send admin notification
         await resend.emails.send({
-          from: EMAIL_FROM,
+          from: senderEmail,
           to: receiverEmail,
           subject: `New Lead: ${name} - ${property} ${project}`,
           html: `
@@ -115,7 +126,7 @@ app.post('/api/lead', async (req: Request, res: Response) => {
 
         // Send customer confirmation
         await resend.emails.send({
-          from: EMAIL_FROM,
+          from: senderEmail,
           to: email,
           subject: `We received your request - ${companyName}`,
           html: `
