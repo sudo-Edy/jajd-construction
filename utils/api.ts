@@ -13,7 +13,7 @@ export interface LeadPayload {
 // API base URL - Controlled by Environment Variable
 // Falls back to production URL if env is missing (prevent hard crash)
 // Replaced dynamic `process.env.VITE_API_URL` with hardcoded fallback only if needed
-const API_BASE = (import.meta.env.VITE_API_URL as string) || 'https://celebrated-beauty-production.up.railway.app';
+const API_BASE = (import.meta.env.VITE_API_URL as string) || '';
 
 // Log API configuration once on page load
 if (typeof window !== 'undefined') {

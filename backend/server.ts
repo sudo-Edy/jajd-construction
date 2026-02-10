@@ -2,6 +2,9 @@ import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { Resend } from 'resend';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { z } from 'zod';
 
 dotenv.config();
 
@@ -22,6 +25,9 @@ console.log('🚀 Starting JAJD Backend Server...');
 console.log('📧 Email Service: Resend');
 console.log('🔧 Environment:', process.env.NODE_ENV || 'development');
 
+// Middleware - Security Headers
+app.use(helmet());
+
 // Middleware - CORS must be first
 const corsOptions = {
   origin: [
@@ -41,6 +47,27 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Middleware - Rate Limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again after 15 minutes.'
+});
+
+// Stricter limiter for lead submission to prevent spam
+const leadLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 lead submissions per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'You have submitted too many leads. Please try again later.'
+});
+
+// Apply global rate limit
+app.use(limiter);
+
 // Verify Resend API key on startup (non-blocking)
 (async () => {
   if (process.env.RESEND_API_KEY) {
@@ -50,7 +77,7 @@ app.use(express.json());
   }
 })();
 
-// Types
+// Types & Validation Schema
 interface LeadPayload {
   name: string;
   email: string;
@@ -61,26 +88,39 @@ interface LeadPayload {
   size: string;
 }
 
+const leadSchema = z.object({
+  name: z.string().min(2, "Name is too short").max(100),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(10, "Phone number is too short").max(20),
+  zip: z.string().min(5, "Invalid ZIP code").max(10),
+  property: z.string().min(1, "Property type is required"),
+  project: z.string().min(1, "Project type is required"),
+  size: z.string().min(1, "Project size is required"),
+});
+
 // Routes
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'Backend is running', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/lead', async (req: Request, res: Response) => {
+app.post('/api/lead', leadLimiter, async (req: Request, res: Response) => {
   try {
-    const { name, email, phone, zip, property, project, size }: LeadPayload = req.body;
+    // Validate request body against schema
+    const validationResult = leadSchema.safeParse(req.body);
 
-    // Log lead submission
-    console.log('� Lead received:', { name, email, phone, zip });
-
-    // Validate required fields
-    if (!name || !email || !phone || !zip) {
-      console.warn('⚠️  Missing required fields:', { name, email, phone, zip });
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Missing required fields: name, email, phone, zip' 
+    if (!validationResult.success) {
+      console.warn('⚠️  Invalid lead submission data:', validationResult.error.format());
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid input data',
+        errors: validationResult.error.issues
       });
     }
+
+    const { name, email, phone, zip, property, project, size }: LeadPayload = validationResult.data;
+
+    // Log lead submission
+    console.log(' Lead received:', { name, email, phone, zip });
 
     // Force usage of verified domain for Sender
     // This solves the 403 error by ignoring any potential "onboarding" value in env vars
@@ -171,10 +211,14 @@ app.use((req: Request, res: Response) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// Start Server
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("🌍 Server bound to 0.0.0.0");
-  console.log(`🚀 Backend running on port ${PORT}`);
-  console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
-  console.log(`📨 Lead endpoint: POST http://0.0.0.0:${PORT}/api/lead`);
-});
+// Start Server locally if run directly
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log("🌍 Server bound to 0.0.0.0");
+    console.log(`🚀 Backend running on port ${PORT}`);
+    console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`);
+    console.log(`📨 Lead endpoint: POST http://0.0.0.0:${PORT}/api/lead`);
+  });
+}
+
+export default app;
