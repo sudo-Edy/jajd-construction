@@ -98,12 +98,20 @@ const leadSchema = z.object({
   size: z.string().min(1, "Project size is required"),
 });
 
+// Debugging Middleware - Log all requests
+app.use((req, res, next) => {
+  console.log(`🔍 [${req.method}] ${req.url}`);
+  next();
+});
+
 // Routes
-app.get('/api/health', (req: Request, res: Response) => {
+// Support both /api/health and /health (in case Vercel strips prefix)
+app.get(['/api/health', '/health'], (req: Request, res: Response) => {
   res.json({ status: 'Backend is running', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/lead', leadLimiter, async (req: Request, res: Response) => {
+// Support both /api/lead and /lead
+app.post(['/api/lead', '/lead'], leadLimiter, async (req: Request, res: Response) => {
   try {
     // Validate request body against schema
     const validationResult = leadSchema.safeParse(req.body);
