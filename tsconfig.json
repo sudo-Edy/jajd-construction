@@ -27,5 +27,12 @@
     "noEmit": false,
     "outDir": "./dist",
     "sourceMap": true
-  }
+  },
+  "include": [
+    "src",
+    "api",
+    "backend",
+    "utils",
+    "vite.config.ts"
+  ]
 }
