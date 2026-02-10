@@ -220,7 +220,8 @@ app.use((req: Request, res: Response) => {
 });
 
 // Start Server locally if run directly
-if (process.env.NODE_ENV !== 'production') {
+import { fileURLToPath } from 'url';
+if (process.env.NODE_ENV !== 'production' && process.argv[1] === fileURLToPath(import.meta.url)) {
   app.listen(PORT, "0.0.0.0", () => {
     console.log("🌍 Server bound to 0.0.0.0");
     console.log(`🚀 Backend running on port ${PORT}`);
