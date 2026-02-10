@@ -99,7 +99,7 @@ const leadSchema = z.object({
 });
 
 // Routes
-app.get('/health', (req: Request, res: Response) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'Backend is running', timestamp: new Date().toISOString() });
 });
 
