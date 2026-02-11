@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.VITE_API_URL': JSON.stringify(env.VITE_API_URL || 'http://localhost:3000'),
+        'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || ''),
       },
       resolve: {
         alias: {
