@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../../utils/supabase';
+import React, { useState, useEffect, useRef } from 'react';
+import { supabase, uploadProjectImage } from '../../utils/supabase';
 import { Service } from '../../types';
 import { Plus, Edit, Trash2, Loader2, GripVertical, Save, X, Upload } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 import {
   DndContext,
   closestCenter,
@@ -89,6 +90,9 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
   const [editingService, setEditingService] = useState<Partial<Service> | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -210,7 +214,44 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
 
   const openEditModal = (service: Service | null) => {
     setEditingService(service || { title: '', description: '', image_url: '' });
+    setImageUploading(false);
+    setImageError(null);
     setIsModalOpen(true);
+  };
+
+  const handleImageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    void processServiceImageUpload(file);
+    e.target.value = '';
+  };
+
+  const processServiceImageUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setImageError('Please select an image file');
+      return;
+    }
+
+    try {
+      setImageError(null);
+      setImageUploading(true);
+
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      const imageUrl = await uploadProjectImage(compressedFile, 'services');
+
+      setEditingService(prev => (prev ? { ...prev, image_url: imageUrl } : prev));
+    } catch (error: any) {
+      console.error('Service image upload error:', error);
+      setImageError(error.message || 'Failed to upload image');
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   return (
@@ -295,29 +336,49 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Image URL</label>
-                <div className="flex gap-2">
-                    <input
-                    type="text"
-                    value={editingService.image_url}
-                    onChange={e => setEditingService({ ...editingService, image_url: e.target.value })}
-                    className="flex-1 px-4 py-3 rounded-lg border border-slate-200 focus:border-[#FACC15] focus:ring-0 transition-colors bg-slate-50"
-                    placeholder="https://..."
-                    />
+                <label className="block text-sm font-bold text-slate-700 mb-2">Service Image</label>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    disabled={imageUploading}
+                    className="flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    <Upload className="w-4 h-4" />
+                    {imageUploading ? 'Uploading...' : 'Upload Image'}
+                  </button>
+                  {editingService.image_url && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingService({ ...editingService, image_url: '' })}
+                      className="px-4 py-3 border border-slate-200 text-slate-700 rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-slate-50 transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
-                    Tip: Use Unsplash or your uploaded project images.
+                  Auto-compressed before upload
                 </p>
-                {editingService.image_url && (
-                    <div className="mt-4 relative h-40 rounded-lg overflow-hidden border border-slate-200">
-                        <img 
-                            src={editingService.image_url} 
-                            alt="Preview" 
-                            className="w-full h-full object-cover"
-                            onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/400x200?text=Invalid+Image+URL')}
-                        />
-                    </div>
+                {imageError && (
+                  <p className="text-xs text-red-600 font-bold mt-2">{imageError}</p>
                 )}
+                {editingService.image_url && (
+                  <div className="mt-4 relative h-40 rounded-lg overflow-hidden border border-slate-200">
+                    <img
+                      src={editingService.image_url}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageInput}
+                  className="hidden"
+                />
               </div>
 
               <button

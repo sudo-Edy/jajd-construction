@@ -4,7 +4,7 @@ import { Award, Target, Users, Construction } from 'lucide-react';
 
 const About: React.FC = () => {
   return (
-    <section id="about us" className="py-24 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden border-b border-slate-100 dark:border-slate-800">
+    <section id="about us" className="py-24 bg-slate-900 text-white relative overflow-hidden border-b border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div className="relative group cursor-pointer">
@@ -31,35 +31,35 @@ const About: React.FC = () => {
           
           <div className="space-y-10">
             <div className="space-y-6">
-              <span className="text-[#CA8A04] font-bold text-xs uppercase tracking-[0.2em]">Our Foundation</span>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Master Craftsmanship. Built on Integrity.</h2>
-              <p className="text-slate-600 text-lg leading-relaxed font-medium">
+              <span className="text-[#38BDF8] font-bold text-xs uppercase tracking-[0.2em]">Our Foundation</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">Master Craftsmanship. Built on Integrity.</h2>
+              <p className="text-slate-300 text-lg leading-relaxed font-medium">
                 JAJD Construction was founded on the principles of precision engineering and transparent client partnerships. From modest residential renovations to complex commercial infrastructures, we bring a "measure twice, cut once" philosophy to every project.
               </p>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-6">
-              <div className="space-y-3 p-4 border border-slate-100 rounded-md hover:border-[#FACC15]/30 transition-colors group">
-                <div className="w-10 h-10 bg-slate-50 rounded-md flex items-center justify-center group-hover:bg-[#FACC15] transition-colors border border-slate-100">
-                  <Award className="w-5 h-5 text-slate-700 group-hover:text-slate-900" />
+              <div className="space-y-3 p-4 border border-white/10 rounded-md hover:border-[#38BDF8]/30 transition-colors group">
+                <div className="w-10 h-10 bg-slate-800/80 rounded-md flex items-center justify-center group-hover:bg-[#38BDF8] transition-colors border border-white/10">
+                  <Award className="w-5 h-5 text-slate-200 group-hover:text-slate-900" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wide">Licensed & Insured</h4>
+                <h4 className="font-bold text-white text-xs uppercase tracking-wide">Licensed & Insured</h4>
               </div>
-              <div className="space-y-3 p-4 border border-slate-100 rounded-md hover:border-[#FACC15]/30 transition-colors group">
-                <div className="w-10 h-10 bg-slate-50 rounded-md flex items-center justify-center group-hover:bg-[#FACC15] transition-colors border border-slate-100">
-                  <Target className="w-5 h-5 text-slate-700 group-hover:text-slate-900" />
+              <div className="space-y-3 p-4 border border-white/10 rounded-md hover:border-[#38BDF8]/30 transition-colors group">
+                <div className="w-10 h-10 bg-slate-800/80 rounded-md flex items-center justify-center group-hover:bg-[#38BDF8] transition-colors border border-white/10">
+                  <Target className="w-5 h-5 text-slate-200 group-hover:text-slate-900" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wide">Warranty Backed</h4>
+                <h4 className="font-bold text-white text-xs uppercase tracking-wide">Warranty Backed</h4>
               </div>
-              <div className="space-y-3 p-4 border border-slate-100 rounded-md hover:border-[#FACC15]/30 transition-colors group">
-                <div className="w-10 h-10 bg-slate-50 rounded-md flex items-center justify-center group-hover:bg-[#FACC15] transition-colors border border-slate-100">
-                  <Construction className="w-5 h-5 text-slate-700 group-hover:text-slate-900" />
+              <div className="space-y-3 p-4 border border-white/10 rounded-md hover:border-[#38BDF8]/30 transition-colors group">
+                <div className="w-10 h-10 bg-slate-800/80 rounded-md flex items-center justify-center group-hover:bg-[#38BDF8] transition-colors border border-white/10">
+                  <Construction className="w-5 h-5 text-slate-200 group-hover:text-slate-900" />
                 </div>
-                <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wide">Elite Standards</h4>
+                <h4 className="font-bold text-white text-xs uppercase tracking-wide">Elite Standards</h4>
               </div>
             </div>
 
-            <button className="bg-slate-900 text-white px-8 py-4 rounded-md font-bold uppercase tracking-wider hover:bg-[#FACC15] hover:text-slate-900 transition-all shadow-lg text-sm active:scale-95">
+            <button className="bg-[#38BDF8] text-slate-900 px-8 py-4 rounded-md font-bold uppercase tracking-wider hover:bg-white transition-all shadow-lg text-sm active:scale-95">
               Meet the JAJD Team
             </button>
           </div>

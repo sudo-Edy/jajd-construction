@@ -1,8 +1,9 @@
-import React, { useState, useEffect, FormEvent } from 'react';
-import { supabase, deleteProjectImage } from '../../utils/supabase';
+import React, { useState, useEffect, FormEvent, useRef } from 'react';
+import { supabase, deleteProjectImage, uploadProjectImage } from '../../utils/supabase';
 import { Project, ProjectImage } from '../../types';
 import { X, Save, Loader2, Trash2, Star } from 'lucide-react';
 import ImageUploader from './ImageUploader';
+import imageCompression from 'browser-image-compression';
 
 interface ProjectEditorProps {
   project: Project | null;
@@ -18,10 +19,13 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
   const [details, setDetails] = useState('');
   const [completionDate, setCompletionDate] = useState('');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState<string | null>(null);
   const [displayOrder, setDisplayOrder] = useState(0);
   const [isPublished, setIsPublished] = useState(true);
   const [images, setImages] = useState<ProjectImage[]>([]);
   const [projectId, setProjectId] = useState<string>('');
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (project) {
@@ -97,6 +101,53 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
 
   const handleSetThumbnail = (imageUrl: string) => {
     setThumbnailUrl(imageUrl);
+  };
+
+  const handleThumbnailInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    void processThumbnailUpload(file);
+    e.target.value = '';
+  };
+
+  const processThumbnailUpload = async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setThumbnailError('Please select an image file');
+      return;
+    }
+
+    try {
+      setThumbnailError(null);
+      setThumbnailUploading(true);
+
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      const imageUrl = await uploadProjectImage(compressedFile, projectId);
+
+      setThumbnailUrl(imageUrl);
+      setImages(prev => {
+        if (prev.some(img => img.image_url === imageUrl)) return prev;
+        return [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            project_id: projectId,
+            image_url: imageUrl,
+            display_order: prev.length,
+          },
+        ];
+      });
+    } catch (error: any) {
+      console.error('Thumbnail upload error:', error);
+      setThumbnailError(error.message || 'Failed to upload thumbnail');
+    } finally {
+      setThumbnailUploading(false);
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -302,6 +353,65 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                   <span className="font-bold text-slate-900">Published</span>
                 </label>
               </div>
+            </div>
+
+            {/* Thumbnail */}
+            <div>
+              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                Thumbnail Image *
+              </label>
+
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="w-full md:w-56">
+                  <div className="w-full aspect-[4/3] rounded-xl border-2 border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
+                    {thumbnailUrl ? (
+                      <img
+                        src={thumbnailUrl}
+                        alt="Project thumbnail"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-slate-400 text-sm font-bold">No thumbnail yet</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-3">
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => thumbnailInputRef.current?.click()}
+                      disabled={thumbnailUploading}
+                      className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {thumbnailUploading ? 'Uploading...' : 'Upload Thumbnail'}
+                    </button>
+                    {thumbnailUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setThumbnailUrl('')}
+                        className="px-6 py-3 border-2 border-slate-200 text-slate-700 rounded-xl font-black uppercase tracking-widest text-xs hover:border-slate-300 hover:bg-slate-50 transition-all"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium">
+                    Auto-compressed before upload • Recommended 4:3 or 16:9
+                  </p>
+                  {thumbnailError && (
+                    <p className="text-sm text-red-600 font-bold">{thumbnailError}</p>
+                  )}
+                </div>
+              </div>
+
+              <input
+                ref={thumbnailInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleThumbnailInput}
+                className="hidden"
+              />
             </div>
 
             {/* Images */}

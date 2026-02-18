@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TESTIMONIALS } from '../constants';
 import { Testimonial } from '../types';
 import { Star, ArrowRight, Quote } from 'lucide-react';
@@ -10,10 +10,49 @@ interface TestimonialsProps {
 const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
   const [activeReview, setActiveReview] = useState<Testimonial | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const isPausedRef = useRef(isPaused);
+  const offsetRef = useRef(0);
+  const lastTimeRef = useRef(0);
 
   // Duplicate testimonials enough times to ensure smooth infinite scroll
   // We need enough copies to fill the screen width + buffer for the animation loop
-  const loopedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
+  const loopCount = 6;
+  const loopedTestimonials = Array.from({ length: loopCount }, () => TESTIMONIALS).flat();
+
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const speed = 32; // px/sec
+    let rafId = 0;
+
+    const step = (now: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = now;
+      const dt = (now - lastTimeRef.current) / 1000;
+      lastTimeRef.current = now;
+
+      if (!isPausedRef.current) {
+        const sequenceWidth = track.scrollWidth / loopCount;
+        if (sequenceWidth > 0) {
+          offsetRef.current -= speed * dt;
+          if (Math.abs(offsetRef.current) >= sequenceWidth) {
+            offsetRef.current += sequenceWidth;
+          }
+          track.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+        }
+      }
+
+      rafId = window.requestAnimationFrame(step);
+    };
+
+    rafId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [loopCount]);
 
   const handleReviewClick = (review: Testimonial) => {
     setActiveReview(review);
@@ -35,23 +74,6 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
         <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mt-4">Trusted by Industry Leaders & Homeowners</h2>
       </div>
 
-      {/* Injected Styles to force animation locally - Optimized for reliability */}
-      <style>{`
-        @keyframes scrollRaw {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .scroller-track {
-          display: flex;
-          width: fit-content;
-          animation: scrollRaw 60s linear infinite; /* Standard speed */
-          will-change: transform;
-        }
-        .scroller-track:hover {
-          animation-play-state: paused !important;
-        }
-      `}</style>
- 
       {/* Marquee Container */}
       <div className="relative w-full overflow-hidden py-10 select-none bg-slate-50">
         {/* Gradient Masks */}
@@ -59,10 +81,15 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
         <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
  
         <div 
-            className="scroller-track gap-6"
-            style={{ 
-              animationPlayState: isPaused ? 'paused' : 'running',
+            ref={trackRef}
+            className="gap-6"
+            style={{
+              display: 'flex',
+              width: 'max-content',
+              willChange: 'transform',
             }}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => { if (!activeReview) setIsPaused(false); }}
         >
           {loopedTestimonials.map((review, index) => (
             <div 

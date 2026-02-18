@@ -34,8 +34,8 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
   };
 
   return (
-    <section className="py-24 px-6 bg-white dark:bg-slate-950 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
+        <section className="py-24 bg-white overflow-hidden transition-colors duration-300">
+            <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white rounded-[3rem] p-8 md:p-16 overflow-hidden relative border-b-8 border-[#FACC15] shadow-2xl">
             {/* Background Effects */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#FACC15]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -52,16 +52,16 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
                         <span className="text-[#FACC15]">Start Date.</span>
                     </h2>
                     
-                    <p className="text-slate-500 text-lg leading-relaxed font-medium max-w-lg">
+                    <p className="text-slate-700 text-lg leading-relaxed font-semibold max-w-lg">
                         Our master crews maintain a strict timeline to ensure quality. Check our availability below and request your consultation to lock in your slot.
                     </p>
 
                     <div className="flex flex-col gap-4">
-                        <div className="flex items-center gap-4 text-slate-700 font-bold p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div className="flex items-center gap-4 text-slate-800 font-bold p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <div className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                             <span>Available for Consultation</span>
                         </div>
-                        <div className="flex items-center gap-4 text-slate-700 font-bold p-4 bg-slate-50 rounded-2xl border border-slate-100 opacity-60">
+                        <div className="flex items-center gap-4 text-slate-700 font-bold p-4 bg-slate-50 rounded-2xl border border-slate-100 opacity-70">
                             <div className="w-3 h-3 rounded-full bg-slate-500" />
                             <span>Fully Booked</span>
                         </div>
@@ -86,21 +86,21 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
                         <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Live</span>
                     </div>
 
-                    <div className="flex items-center justify-between mb-8 pt-4 relative z-10">
+                          <div className="flex items-center justify-between mb-8 pt-4 relative z-10">
                         <h3 className="text-2xl font-black text-slate-900">
                             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                         </h3>
                         <div className="flex gap-2">
                              <button 
                                 onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)))}
-                                className="p-2 hover:bg-slate-50 rounded-full text-slate-400 hover:text-slate-900 transition-colors"
+                                          className="p-2 hover:bg-slate-50 rounded-full text-slate-600 hover:text-slate-900 transition-colors"
                                 disabled={new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) < new Date()}
                              >
                                 <ChevronLeft />
                              </button>
                              <button 
                                 onClick={() => setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)))}
-                                className="p-2 hover:bg-slate-50 rounded-full text-slate-400 hover:text-slate-900 transition-colors"
+                                          className="p-2 hover:bg-slate-50 rounded-full text-slate-600 hover:text-slate-900 transition-colors"
                              >
                                 <ChevronRight />
                              </button>
@@ -109,7 +109,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
 
                     <div className="grid grid-cols-7 gap-2 md:gap-4 mb-4 text-center">
                         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                            <div key={day} className="text-slate-400 text-xs font-bold uppercase">{day}</div>
+                            <div key={day} className="text-slate-800 text-xs font-black uppercase drop-shadow-[0_2px_0_rgba(15,23,42,0.35)]">{day}</div>
                         ))}
                     </div>
 
@@ -134,7 +134,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
                                         ${status === 'past' ? 'opacity-20 cursor-not-allowed' : ''}
                                     `}
                                 >
-                                    <span className={`text-sm md:text-lg font-bold ${status === 'available' ? 'text-emerald-600 group-hover:text-white' : status === 'limited' ? 'text-[#FACC15] group-hover:text-slate-900' : 'text-slate-300'}`}>
+                                    <span className={`text-sm md:text-lg font-black ${status === 'available' ? 'text-emerald-700 group-hover:text-white' : status === 'limited' ? 'text-[#FACC15] group-hover:text-slate-900' : 'text-slate-600 drop-shadow-[0_2px_0_rgba(15,23,42,0.35)]'}`}>
                                         {day}
                                     </span>
                                     
@@ -149,7 +149,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote }) => {
                         })}
                     </div>
                     
-                    <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-400">
+                    <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-700 drop-shadow-[0_2px_0_rgba(15,23,42,0.35)]">
                         <div className="flex items-center gap-2">
                              <MapPin size={14} className="text-[#FACC15]" /> Available in your area
                         </div>

@@ -33,19 +33,19 @@ const Services: React.FC<ServicesProps> = ({ onOpenQuote }) => {
 
   return (
     <section id="services" className="py-24 bg-slate-900 text-white relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#FACC15]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#38BDF8]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div className="space-y-2">
-            <span className="text-[#FACC15] font-bold text-xs uppercase tracking-[0.2em]">Our Specializations</span>
+            <span className="text-[#38BDF8] font-bold text-xs uppercase tracking-[0.2em]">Our Specializations</span>
             <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight">Services We Offer</h2>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-48">
-            <Loader2 className="w-10 h-10 text-[#FACC15] animate-spin" />
+            <Loader2 className="w-10 h-10 text-[#38BDF8] animate-spin" />
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -60,7 +60,7 @@ const Services: React.FC<ServicesProps> = ({ onOpenQuote }) => {
                     }}
                  />
 
-                 <div className="relative group overflow-hidden rounded-lg bg-slate-800/50 border border-white/10 hover:border-[#FACC15]/30 hover:bg-slate-800 transition-all duration-300 shadow-lg">
+                 <div className="relative group overflow-hidden rounded-lg bg-slate-800/50 border border-white/10 hover:border-[#38BDF8]/30 hover:bg-slate-800 transition-all duration-300 shadow-lg">
                   <div className="h-40 overflow-hidden relative">
                     <img 
                       src={service.image_url} 
@@ -74,7 +74,7 @@ const Services: React.FC<ServicesProps> = ({ onOpenQuote }) => {
                     <h3 className="text-lg font-bold leading-tight text-white">{service.title}</h3>
                     <p className="text-white/60 text-xs leading-relaxed line-clamp-2">{service.description}</p>
                     <button 
-                      className="flex items-center gap-2 text-[#FACC15] font-bold text-[10px] uppercase tracking-wider group-hover:gap-3 transition-all pt-1"
+                      className="flex items-center gap-2 text-[#38BDF8] font-bold text-[10px] uppercase tracking-wider group-hover:gap-3 transition-all pt-1"
                     >
                       Estimate <ChevronRight className="w-3 h-3" />
                     </button>
