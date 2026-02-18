@@ -19,6 +19,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           alt="Modern Construction Jobsite"
           className="w-full h-full object-cover opacity-60"
           loading="eager"
+          decoding="async"
+          fetchPriority="high"
         />
       </div>
 

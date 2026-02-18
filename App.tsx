@@ -9,6 +9,8 @@ import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
 import ZipSearch from './components/ZipSearch';
 import About from './components/About';
+import FAQ from './components/FAQ';
+import ServiceAreas from './components/ServiceAreas';
 import QuoteModal from './components/QuoteModal';
 import RecentWork from './components/RecentWork';
 import BookingCalendar from './components/BookingCalendar';
@@ -82,11 +84,13 @@ function App() {
         <RecentWork />
         <Services onOpenQuote={() => handleOpenQuote()} />
         <BookingCalendar onOpenQuote={() => handleOpenQuote()} />
-        <About />
-
         <Process onOpenQuote={() => handleOpenQuote()} />
 
+        <About />
+        <ServiceAreas />
+
         <Testimonials onOpenQuote={() => handleOpenQuote()} />
+        <FAQ onOpenQuote={() => handleOpenQuote()} />
         <Sources />
       </main>
 

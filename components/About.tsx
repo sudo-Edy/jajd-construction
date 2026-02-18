@@ -34,7 +34,7 @@ const About: React.FC = () => {
               <span className="text-[#38BDF8] font-bold text-xs uppercase tracking-[0.2em]">Our Foundation</span>
               <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">Master Craftsmanship. Built on Integrity.</h2>
               <p className="text-slate-300 text-lg leading-relaxed font-medium">
-                JAJD Construction was founded on the principles of precision engineering and transparent client partnerships. From modest residential renovations to complex commercial infrastructures, we bring a "measure twice, cut once" philosophy to every project.
+                JAJD Construction was founded on the principles of precision engineering and transparent client partnerships. From modest residential renovations to complex commercial infrastructures, we bring a "measure twice, cut once" philosophy to every project. Serving Nebraska homeowners and businesses with dependable craftsmanship.
               </p>
             </div>
 
