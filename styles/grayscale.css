@@ -1,0 +1,158 @@
+/* Dark Mode Styles for JAJD Construction */
+
+/* Dark mode background and text colors */
+.dark {
+  background-color: #0f172a; /* slate-900 */
+  color: #f1f5f9; /* slate-100 */
+}
+
+.dark body {
+  background-color: #0f172a;
+}
+
+/* Keep the main wrapper dark */
+.dark .min-h-screen {
+  background-color: #0f172a !important;
+}
+
+/* Dark mode for sections */
+.dark section {
+  background-color: #1e293b; /* slate-800 */
+}
+
+.dark section.bg-white {
+  background-color: #1e293b !important;
+}
+
+.dark section.bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+.dark section.bg-slate-900 {
+  background-color: #020617 !important; /* slate-950 - even darker for contrast */
+}
+
+/* Text colors in dark mode */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f1f5f9; /* light text for headings */
+}
+
+.dark p,
+.dark span,
+.dark li,
+.dark div {
+  color: #cbd5e1; /* slate-300 for body text */
+}
+
+/* Keep yellow accent color vibrant */
+.dark .text-\[\#FACC15\],
+.dark [class*="text-yellow"] {
+  color: #FACC15 !important; /* Keep yellow vibrant */
+}
+
+.dark .bg-\[\#FACC15\],
+.dark [class*="bg-yellow"] {
+  background-color: #FACC15 !important; /* Keep yellow backgrounds */
+  color: #0f172a !important; /* Dark text on yellow */
+}
+
+/* Cards and containers */
+.dark .bg-white {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .rounded-\[2rem\],
+.dark .rounded-\[2\.5rem\],
+.dark .rounded-\[4rem\] {
+  background-color: #1e293b;
+}
+
+/* Borders */
+.dark .border-slate-200,
+.dark .border-2 {
+  border-color: #334155 !important; /* slate-700 */
+}
+
+/* Buttons */
+.dark button.bg-slate-900 {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.dark button.bg-slate-900:hover {
+  background-color: #FACC15 !important;
+  color: #0f172a !important;
+}
+
+/* Form inputs */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #1e293b !important;
+  border-color: #475569 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important; /* slate-500 */
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #FACC15 !important;
+}
+
+/* Footer */
+.dark footer {
+  background-color: #020617 !important; /* slate-950 */
+}
+
+/* Images - keep normal, don't invert */
+.dark img {
+  filter: none;
+}
+
+/* Preserve specific elements */
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: #94a3b8 !important; /* lighter in dark mode */
+}
+
+.dark .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-900 {
+  color: #f1f5f9 !important;
+}
+
+.dark . .text-white {
+  color: #f1f5f9 !important;
+}
+
+/* Hover states */
+.dark .hover\:bg-slate-100:hover {
+  background-color: #334155 !important; /* slate-700 */
+}
+
+.dark .hover\:bg-slate-50:hover {
+  background-color: #1e293b !important;
+}
+
+/* Glassmorphism effects */
+.dark [class*="backdrop-blur"] {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

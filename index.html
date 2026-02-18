@@ -6,6 +6,7 @@
     
     <!-- SEO & Metadata -->
     <title>JAJD Construction | Residential & Commercial Master Builders</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <meta name="description" content="JAJD Construction provides high-end residential remodeling, commercial fit-outs, and specialty building services. Get a free professional estimate today.">
     <meta name="keywords" content="construction, remodeling, commercial building, residential construction, JAJD Construction, general contractor">
     
@@ -47,7 +48,68 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            scroll-behavior: smooth; 
+        }
+        
+        /* Apple-style Scroll Snap - Only active when .snap-scroll class is present on HTML */
+        html.snap-scroll {
+            scroll-snap-type: y mandatory;
+            scroll-padding-top: 85px;
+        }
+
+        @media (max-width: 768px) {
+            html.snap-scroll {
+                scroll-padding-top: 65px; /* Smaller header offset for mobile */
+            }
+        }
+        
+        /* Only apply snap alignment to direct children of main when snap is enabled */
+        html.snap-scroll section, 
+        html.snap-scroll header, 
+        html.snap-scroll footer, 
+        html.snap-scroll #hero {
+            scroll-snap-align: start; 
+            scroll-snap-stop: always;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding-top: 85px; 
+            padding-bottom: 2rem;
+            box-sizing: border-box;
+        }
+
+        /* Override padding for standard sections */
+        html.snap-scroll section[class*="py-"] {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        
+        html.snap-scroll section {
+             padding-top: 85px !important; 
+             padding-bottom: 40px !important;
+        }
+
+        @media (max-width: 768px) {
+            html.snap-scroll section, 
+            html.snap-scroll header, 
+            html.snap-scroll footer, 
+            html.snap-scroll #hero {
+                padding-top: 65px !important; /* Match mobile scroll padding */
+                scroll-snap-stop: normal; /* Relax snap stop on mobile to allow easier scrolling of long content */
+            }
+        }
+
+        html.snap-scroll header { 
+            min-height: auto; 
+            scroll-snap-align: none;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .bg-navy { background-color: #0F172A; }
         .text-accent { color: #FACC15; }

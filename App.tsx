@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Process from './components/Process';
@@ -9,6 +10,9 @@ import Footer from './components/Footer';
 import ZipSearch from './components/ZipSearch';
 import About from './components/About';
 import QuoteModal from './components/QuoteModal';
+import RecentWork from './components/RecentWork';
+import AdminPanel from './components/admin/AdminPanel';
+import DarkModeToggle from './components/DarkModeToggle';
 import { MessageSquare, X, ArrowRight, ShieldCheck, Clock } from 'lucide-react';
 
 function App() {
@@ -16,6 +20,9 @@ function App() {
   const [activeZip, setActiveZip] = useState('');
   const [showExitIntent, setShowExitIntent] = useState(false);
   const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
+
+  // Simple client-side routing
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
 
   const handleOpenQuote = (zip?: string) => {
     if (zip) setActiveZip(zip);
@@ -35,25 +42,32 @@ function App() {
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [hasShownExitIntent, isQuoteOpen]);
 
+  // Render admin panel if on /admin route
+  if (isAdminRoute) {
+    document.documentElement.classList.remove('snap-scroll');
+    return <AdminPanel />;
+  }
+
+  // Add snap-scroll class only for main site
+  useEffect(() => {
+    document.documentElement.classList.add('snap-scroll');
+    return () => {
+      document.documentElement.classList.remove('snap-scroll');
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-white">
+    <ThemeProvider>
+      <div className="min-h-screen bg-white">
       <Header onOpenQuote={() => handleOpenQuote()} />
       
       <main id="main-content">
         <Hero onOpenQuote={handleOpenQuote} />
         
-        <section aria-label="Accreditations" className="bg-slate-900 py-12 border-y border-white/5 relative z-30">
-          <div className="max-w-7xl mx-auto px-6 overflow-hidden">
-            <div className="flex flex-wrap justify-center md:justify-between items-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
-              {['OSHA', 'LEED', 'NAHB', 'AGC', 'IAI', 'BBB A+'].map((logo) => (
-                <span key={logo} className="text-2xl font-black text-white tracking-[0.4em] italic">{logo}</span>
-              ))}
-            </div>
-          </div>
-        </section>
+        <div className="h-3 w-full bg-gradient-to-r from-slate-900 via-[#FACC15] to-slate-900 z-30 relative opacity-80" />
 
+        <RecentWork />
         <Services onOpenQuote={() => handleOpenQuote()} />
-        <ZipSearch onOpenQuote={handleOpenQuote} />
         <Process onOpenQuote={() => handleOpenQuote()} />
         <About />
 
@@ -150,7 +164,11 @@ function App() {
         onClose={() => { setIsQuoteOpen(false); setActiveZip(''); }} 
         initialZip={activeZip}
       />
+
+      {/* Dark mode toggle */}
+      <DarkModeToggle />
     </div>
+    </ThemeProvider>
   );
 }
 

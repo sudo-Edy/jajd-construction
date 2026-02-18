@@ -8,114 +8,98 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
   const [zip, setZip] = useState('');
-  const [error, setError] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isValidZip(zip)) {
-      setError(false);
-      onOpenQuote(zip);
-    } else {
-      setError(true);
-    }
-  };
 
   return (
-    <section className="relative min-h-[95vh] flex items-center pt-24 overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center pt-32 pb-20 overflow-hidden">
+      {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-transparent z-10" />
+        <div className="absolute inset-0 bg-slate-900/90 z-10" />
         <img 
           src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=2000" 
           alt="Modern Construction Jobsite"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover opacity-60"
           loading="eager"
         />
       </div>
 
-      <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center">
-        <div className="text-white space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FACC15]/10 backdrop-blur-md border border-[#FACC15]/20">
-            <ShieldCheck className="w-4 h-4 text-[#FACC15]" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">Licensed, Bonded & Insured</span>
+      <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-16 items-center">
+        {/* Left Text Content */}
+        <div className="text-white space-y-8 animate-in slide-in-from-left duration-700">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-colors cursor-default">
+            <Star className="w-3.5 h-3.5 text-[#FACC15] fill-[#FACC15]" />
+            <span className="text-xs font-bold uppercase tracking-wider text-white">#1 Rated in Omaha</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight">
-            Reliable people & <br />
-            <span className="text-[#FACC15]">Construction Services.</span>
+          
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] drop-shadow-lg">
+            Omaha's Premier <br />
+            <span className="text-[#FACC15]">Painting & Reno</span> <br />
+            Experts.
           </h1>
-          <p className="text-xl text-white/70 max-w-lg leading-relaxed font-medium">
-            Setting the master standard in construction management. Delivering high-end residential and commercial excellence since 2012.
+          
+          <p className="text-lg md:text-xl text-white/90 max-w-lg leading-relaxed font-medium drop-shadow-md">
+            From detailed interior painting to full-scale remodels, we bring certainty to your project. On time, on budget, and built to last.
           </p>
 
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <label htmlFor="hero-zip" className="text-xs font-bold uppercase tracking-[0.2em] text-white/60 block">Enter your ZIP for a fast, no-obligation estimate</label>
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md">
-                <div className="flex-1 relative">
-                  <input 
-                    id="hero-zip"
-                    type="text" 
-                    maxLength={5}
-                    placeholder="ZIP Code" 
-                    value={zip}
-                    onChange={(e) => {
-                      setZip(e.target.value.replace(/\D/g, ''));
-                      if (error) setError(false);
-                    }}
-                    className={`w-full bg-white rounded-xl px-6 py-4 text-slate-900 font-bold placeholder:text-slate-900/40 focus:outline-none shadow-xl border-2 transition-all ${error ? 'border-red-500' : 'border-transparent focus:border-[#FACC15]'}`}
-                  />
-                  {error && <p className="absolute -bottom-6 left-0 text-red-400 text-[10px] font-bold uppercase">Invalid 5-digit ZIP</p>}
-                </div>
-                <button 
-                  type="submit"
-                  className="bg-[#FACC15] text-slate-900 px-8 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition-all shadow-xl flex items-center justify-center gap-2 group"
-                >
-                  Go <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </button>
-              </form>
+          <div className="flex flex-wrap gap-4 pt-2">
+            <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+               <ShieldCheck className="w-6 h-6 text-[#FACC15]" />
+               <div>
+                 <p className="text-[10px] uppercase font-bold tracking-wider text-white/50">Fully</p>
+                 <p className="font-semibold text-sm">Insured & Bonded</p>
+               </div>
             </div>
-            
-            <div className="flex flex-wrap items-center gap-6 text-white/50 text-[10px] font-black uppercase tracking-widest">
-               <div className="flex items-center gap-2">
-                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                 Free Estimates
-               </div>
-               <div className="flex items-center gap-2">
-                 <Clock className="w-4 h-4 text-[#FACC15]" />
-                 24-Hour Response
-               </div>
-               <div className="flex items-center gap-2">
-                 <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                 Highly Rated Service
+            <div className="flex items-center gap-3 bg-white/5 px-5 py-3 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+               <CheckCircle2 className="w-6 h-6 text-[#FACC15]" />
+               <div>
+                 <p className="text-[10px] uppercase font-bold tracking-wider text-white/50">2 Year</p>
+                 <p className="font-semibold text-sm">Warranty Included</p>
                </div>
             </div>
           </div>
         </div>
 
-        <div className="hidden lg:block justify-self-end">
-          <div className="glass p-6 rounded-[2rem] w-96 shadow-2xl animate-bounce-slow">
-            <div className="relative mb-4 aspect-video overflow-hidden rounded-xl">
-              <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="metadata"
-  className="w-full h-full object-cover"
-  poster="https://images.unsplash.com/photo-1590644365607-1c5a519a7a37?auto=format&fit=crop&q=80&w=800"
->
-  <source src="/videos/jajd-hero.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
-
-              <div className="absolute top-2 left-2 bg-[#FACC15] text-slate-900 text-[8px] font-black uppercase px-2 py-1 rounded">
-                Live Build
+        {/* Right Floating Estimate Card */}
+        <div className="lg:justify-self-end w-full max-w-md animate-in slide-in-from-right duration-700 delay-200">
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-lg shadow-2xl relative overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/10">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FACC15]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            
+            <div className="relative z-10 space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Schedule Your Free Estimate</h3>
+                <p className="text-slate-600 dark:text-slate-400 font-medium text-sm mt-2">Find out exactly what your project will cost. No obligation.</p>
               </div>
-            </div>
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-[#FACC15] uppercase tracking-[0.2em]">Latest Update</p>
-              <p className="text-white font-bold text-lg">Montana Home</p>
-              <div className="w-full bg-white/10 h-1.5 rounded-full mt-1">
-                <div className="bg-[#FACC15] h-full rounded-full w-3/4" />
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                   <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Property Zip Code</label>
+                   <div className="relative">
+                     <input 
+                        type="text" 
+                        maxLength={5}
+                        placeholder="e.g. 68102"
+                        className="w-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-md px-4 py-3 font-bold text-lg focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] transition-all text-slate-900 dark:text-white placeholder-slate-300"
+                        value={zip}
+                        onChange={(e) => setZip(e.target.value.replace(/\D/g, ''))}
+                     />
+                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                       <Clock className="w-5 h-5 text-slate-400" />
+                     </div>
+                   </div>
+                </div>
+
+                <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-md border border-slate-200 dark:border-slate-700 flex gap-3 items-start">
+                   <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                   <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                     Your privacy is protected. We never share your data with 3rd parties.
+                   </p>
+                </div>
+
+                <button 
+                  onClick={() => onOpenQuote(zip)}
+                  className="w-full bg-[#FACC15] text-slate-900 py-4 rounded-md font-bold uppercase tracking-wider hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-900 transition-all shadow-lg flex items-center justify-center gap-2 text-sm"
+                >
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>

@@ -37,24 +37,36 @@ export const PROCESS_STEPS: ProcessStep[] = [
   }
 ];
 
-export const SERVICES: ServiceCardProps[] = [
+export const SERVICES = [
   {
-    title: "Residential Construction",
-    description: "From custom new builds to full home remodeling and high-end interior renovations.",
-    image: "https://images.unsplash.com/photo-1503387762-592dea58ed23?auto=format&fit=crop&q=80&w=1200",
-    features: ["Custom Home Building", "Kitchen & Bath Remodels", "Room Additions", "Structural Repairs"]
+    title: "Interior Painting & Remodels",
+    description: "More than just paint. We handle drywall repair, trim removal, and small interior renovations for a complete refresh.",
+    image: "https://images.unsplash.com/photo-1562663474-6cbb3eaa4d14?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    title: "Exterior Painting & Siding",
+    description: "Complete exterior protection. We specialize in exterior painting and siding repairs (Vinyl, Wood, Hardie Board).",
+    image: "/exterior-siding.jpg"
+  },
+  {
+    title: "Roofing Systems",
+    description: "Expert roof inspections, repairs, and full replacements. We ensure your home is watertight and durable.",
+    image: "https://images.unsplash.com/photo-1632759145351-1d592919f522?auto=format&fit=crop&q=80&w=800"
+  },
+  {
+    title: "Cabinet Refinishing",
+    description: "Transform your kitchen without the cost of replacement. Factory-finish quality using specialized coatings.",
+    image: "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?auto=format&fit=crop&q=80&w=800"
   },
   {
     title: "Commercial Services",
-    description: "Professional office fit-outs, retail construction, and large-scale property maintenance.",
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200",
-    features: ["Office Renovations", "Retail Build-outs", "Tenant Improvements", "Facility Management"]
+    description: "Scalable maintenance solutions. We handle painting, roofing, and build-outs for offices and retail spaces.",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=800"
   },
   {
-    title: "Specialty Contracting",
-    description: "Expert roofing, flooring, and exterior improvements requiring technical precision.",
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=1200",
-    features: ["Roofing & Siding", "High-End Flooring", "Drywall & Finishing", "Deck Construction"]
+    title: "Decks & Power Washing",
+    description: "Restore your outdoor living spaces. Deep cleaning, staining, and wood repairs for decks and fences.",
+    image: "https://images.unsplash.com/photo-1520089851-f76db36d0bc6?auto=format&fit=crop&q=80&w=800"
   }
 ];
 
@@ -83,9 +95,9 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
-  { id: 1, name: "Sample Client A", role: "Residential Homeowner", content: "JAJD Construction transformed our kitchen into a masterpiece. Their team was professional, on-time, and within budget.", rating: 5 },
-  { id: 2, name: "Sample Client B", role: "Property Manager", content: "We use JAJD for all our commercial tenant improvements. Reliable service every single time.", rating: 5 },
-  { id: 3, name: "Sample Client C", role: "Business Owner", content: "Excellent communication throughout the whole roofing project. I highly recommend their specialty crew.", rating: 5 }
+  { id: 1, name: "Thumbtack Review", role: "Exterior Painting", content: "Great customer service and job completion. I would definitely hire them again for future projects.", rating: 5 },
+  { id: 2, name: "BBB Review", role: "Whole Home Painting", content: "They exceeded our expectations and did a fantastic job. Professional, on-time, and great results.", rating: 5 },
+  { id: 3, name: "Google Review", role: "Interior Renovation", content: "Excellent and very professional work. The team was friendly, efficient, and ensured a thorough cleanup.", rating: 5 }
 ];
 
 export const MOCK_BRANCHES = [
