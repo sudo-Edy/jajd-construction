@@ -177,10 +177,10 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
   };
 
   return (
-    <div className="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 overflow-y-auto">
-      <div className="bg-white rounded-[2.5rem] w-full max-w-4xl my-8">
-        {/* Header */}
-        <div className="p-8 border-b-2 border-slate-200 flex items-center justify-between">
+    <div className="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
+      <div className="bg-white rounded-[2.5rem] w-full max-w-4xl my-8 flex flex-col max-h-[90vh]">
+        {/* Header - Fixed */}
+        <div className="p-8 border-b-2 border-slate-200 flex items-center justify-between flex-shrink-0">
           <div>
             <h2 className="text-3xl font-black text-slate-900">
               {project ? 'Edit Project' : 'New Project'}
@@ -197,202 +197,205 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
-          {/* Basic info */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-                Project Title *
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
-                placeholder="Kitchen Cabinet Refinish"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-                Location *
-              </label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
-                placeholder="Papillion, NE"
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-              Short Description *
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              rows={2}
-              className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
-              placeholder="Brief description shown on project card"
-            />
-          </div>
-
-          {/* Details */}
-          <div>
-            <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-              Detailed Description
-            </label>
-            <textarea
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
-              placeholder="Full details shown in the gallery modal"
-            />
-          </div>
-
-          {/* Completion date and settings */}
-          <div className="grid md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-                Completion Date
-              </label>
-              <input
-                type="text"
-                value={completionDate}
-                onChange={(e) => setCompletionDate(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
-                placeholder="January 2024"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-                Display Order
-              </label>
-              <input
-                type="number"
-                value={displayOrder}
-                onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
-                placeholder="0"
-              />
-            </div>
-
-            <div>
-              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-                Status
-              </label>
-              <label className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-[#FACC15] transition-colors">
+        {/* Scrollable Form Body */}
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+          <form id="project-form" onSubmit={handleSubmit} className="space-y-8">
+            {/* Basic info */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                  Project Title *
+                </label>
                 <input
-                  type="checkbox"
-                  checked={isPublished}
-                  onChange={(e) => setIsPublished(e.target.checked)}
-                  className="w-5 h-5 rounded"
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  placeholder="Kitchen Cabinet Refinish"
                 />
-                <span className="font-bold text-slate-900">Published</span>
-              </label>
+              </div>
+
+              <div>
+                <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                  Location *
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  placeholder="Papillion, NE"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Images */}
-          <div>
-            <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
-              Project Images *
-            </label>
+            {/* Description */}
+            <div>
+              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                Short Description *
+              </label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                rows={2}
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
+                placeholder="Brief description shown on project card"
+              />
+            </div>
 
-            {/* Existing images */}
-            {images.length > 0 && (
-              <div className="mb-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
-                  {images.map((image, index) => (
-                    <div key={index} className="relative group rounded-xl overflow-hidden">
-                      <img
-                        src={image.image_url}
-                        alt={`Project image ${index + 1}`}
-                        className="w-full aspect-square object-cover"
-                      />
+            {/* Details */}
+            <div>
+              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                Detailed Description
+              </label>
+              <textarea
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
+                placeholder="Full details shown in the gallery modal"
+              />
+            </div>
 
-                      {/* Thumbnail indicator */}
-                      {image.image_url === thumbnailUrl && (
-                        <div className="absolute top-2 left-2 bg-[#FACC15] text-slate-900 px-2 py-1 rounded-lg flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          <span className="text-xs font-black">Thumbnail</span>
-                        </div>
-                      )}
+            {/* Completion date and settings */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                  Completion Date
+                </label>
+                <input
+                  type="text"
+                  value={completionDate}
+                  onChange={(e) => setCompletionDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  placeholder="January 2024"
+                />
+              </div>
 
-                      {/* Actions */}
-                      <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        {image.image_url !== thumbnailUrl && (
+              <div>
+                <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                  Display Order
+                </label>
+                <input
+                  type="number"
+                  value={displayOrder}
+                  onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  placeholder="0"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                  Status
+                </label>
+                <label className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-[#FACC15] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={isPublished}
+                    onChange={(e) => setIsPublished(e.target.checked)}
+                    className="w-5 h-5 rounded"
+                  />
+                  <span className="font-bold text-slate-900">Published</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Images */}
+            <div>
+              <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
+                Project Images *
+              </label>
+
+              {/* Existing images */}
+              {images.length > 0 && (
+                <div className="mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                    {images.map((image, index) => (
+                      <div key={index} className="relative group rounded-xl overflow-hidden">
+                        <img
+                          src={image.image_url}
+                          alt={`Project image ${index + 1}`}
+                          className="w-full aspect-square object-cover"
+                        />
+
+                        {/* Thumbnail indicator */}
+                        {image.image_url === thumbnailUrl && (
+                          <div className="absolute top-2 left-2 bg-[#FACC15] text-slate-900 px-2 py-1 rounded-lg flex items-center gap-1">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span className="text-xs font-black">Thumbnail</span>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          {image.image_url !== thumbnailUrl && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetThumbnail(image.image_url)}
+                              className="px-3 py-2 bg-[#FACC15] text-slate-900 rounded-lg text-xs font-black hover:bg-white transition-colors"
+                            >
+                              Set as Thumbnail
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => handleSetThumbnail(image.image_url)}
-                            className="px-3 py-2 bg-[#FACC15] text-slate-900 rounded-lg text-xs font-black hover:bg-white transition-colors"
+                            onClick={() => handleDeleteImage(image, index)}
+                            className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors"
                           >
-                            Set as Thumbnail
+                            <Trash2 className="w-5 h-5 text-white" />
                           </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteImage(image, index)}
-                          className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5 text-white" />
-                        </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-500 font-medium">
+                    {images.length} image{images.length !== 1 ? 's' : ''} • Click "Set as Thumbnail" to choose the main image
+                  </p>
                 </div>
-                <p className="text-sm text-slate-500 font-medium">
-                  {images.length} image{images.length !== 1 ? 's' : ''} • Click "Set as Thumbnail" to choose the main image
-                </p>
-              </div>
-            )}
-
-            {/* Image uploader */}
-            <ImageUploader
-              projectId={projectId}
-              onImageUploaded={handleImageUploaded}
-              existingImages={images.map(img => img.image_url)}
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center justify-end gap-4 pt-6 border-t-2 border-slate-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-8 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-8 py-4 bg-[#FACC15] text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" />
-                  Save Project
-                </>
               )}
-            </button>
-          </div>
-        </form>
+
+              {/* Image uploader */}
+              <ImageUploader
+                projectId={projectId}
+                onImageUploaded={handleImageUploaded}
+                existingImages={images.map(img => img.image_url)}
+              />
+            </div>
+          </form>
+        </div>
+
+        {/* Footer Actions - Fixed */}
+        <div className="flex items-center justify-end gap-4 p-6 border-t-2 border-slate-200 bg-white rounded-b-[2.5rem] flex-shrink-0 z-10">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-8 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="project-form" // Link to form
+            disabled={loading}
+            className="px-8 py-4 bg-[#FACC15] text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                Save Project
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

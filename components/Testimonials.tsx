@@ -1,106 +1,153 @@
 import React, { useState } from 'react';
 import { TESTIMONIALS } from '../constants';
-import { Quote, ChevronLeft, ChevronRight, Star, ArrowRight } from 'lucide-react';
+import { Testimonial } from '../types';
+import { Star, ArrowRight, Quote } from 'lucide-react';
 
 interface TestimonialsProps {
   onOpenQuote?: () => void;
 }
 
 const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
-  const [active, setActive] = useState(0);
+  const [activeReview, setActiveReview] = useState<Testimonial | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
-  const next = () => setActive((prev) => (prev + 1) % TESTIMONIALS.length);
-  const prev = () => setActive((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+  // Duplicate testimonials enough times to ensure smooth infinite scroll
+  // We need enough copies to fill the screen width + buffer for the animation loop
+  const loopedTestimonials = [...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS, ...TESTIMONIALS];
 
-  // Auto-rotate every 6 seconds, pause on hover
-  React.useEffect(() => {
-    if (isPaused) return;
-    const interval = setInterval(next, 6000);
-    return () => clearInterval(interval);
-  }, [isPaused]);
+  const handleReviewClick = (review: Testimonial) => {
+    setActiveReview(review);
+    setIsPaused(true);
+  };
+
+  const closeReview = () => {
+    setActiveReview(null);
+    setIsPaused(false);
+  };
 
   return (
     <section 
       id="reviews" 
-      className="py-24 bg-slate-50 overflow-hidden border-b border-slate-200"
-      onMouseEnter={() => setIsPaused(true)} 
-      onMouseLeave={() => setIsPaused(false)}
+      className="py-24 bg-slate-50 overflow-hidden border-b border-slate-200 relative"
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <span className="text-[#CA8A04] font-bold text-xs uppercase tracking-[0.2em]">Client Testimony</span>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Trusted by Industry Leaders & Homeowners</h2>
-            </div>
-            <div className="flex gap-4">
-              <button onClick={prev} className="w-12 h-12 rounded-md border border-slate-200 flex items-center justify-center hover:bg-white hover:shadow-lg transition-all hover:border-[#FACC15]/30 group">
-                <ChevronLeft className="w-5 h-5 text-slate-600 group-hover:text-slate-900" />
-              </button>
-              <button onClick={next} className="w-12 h-12 rounded-md border border-slate-200 flex items-center justify-center hover:bg-white hover:shadow-lg transition-all hover:border-[#FACC15]/30 group">
-                <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-slate-900" />
-              </button>
-            </div>
-            
-            <div className="flex items-center gap-6 p-6 bg-white rounded-lg shadow-sm border border-slate-200">
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="rounded-full ring-2 ring-white">
-                     <img 
-                      src={`https://picsum.photos/seed/${i}/100/100`} 
-                      className="w-10 h-10 rounded-full object-cover" 
-                      alt="Reviewer"
-                    />
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-1">
-                <div className="flex text-[#FACC15]">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-                </div>
-                <p className="text-xs font-bold text-slate-900">4.9/5 Average Rating <span className="text-slate-500 font-medium">(500+ Projects)</span></p>
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-6 mb-16 text-center">
+        <span className="text-[#CA8A04] font-bold text-xs uppercase tracking-[0.2em]">Client Testimony</span>
+        <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight mt-4">Trusted by Industry Leaders & Homeowners</h2>
+      </div>
 
-          <div className="relative">
-            <Quote className="absolute -top-6 -left-6 w-24 h-24 text-slate-200/50 -z-0" />
-            <div className="relative z-10 bg-white p-10 rounded-lg shadow-xl border border-slate-100 space-y-8 animate-in fade-in slide-in-from-right duration-500 min-h-[320px] flex flex-col justify-between" key={active}>
-              <div className="space-y-6">
-                <div className="flex gap-1 text-[#FACC15]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-current" />
-                  ))}
-                </div>
-                <p className="text-xl md:text-2xl font-medium text-slate-900 leading-relaxed">
-                  "{TESTIMONIALS[active].content}"
-                </p>
-              </div>
+      {/* Injected Styles to force animation locally - Optimized for reliability */}
+      <style>{`
+        @keyframes scrollRaw {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .scroller-track {
+          display: flex;
+          width: fit-content;
+          animation: scrollRaw 60s linear infinite; /* Standard speed */
+          will-change: transform;
+        }
+        .scroller-track:hover {
+          animation-play-state: paused !important;
+        }
+      `}</style>
+ 
+      {/* Marquee Container */}
+      <div className="relative w-full overflow-hidden py-10 select-none bg-slate-50">
+        {/* Gradient Masks */}
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+ 
+        <div 
+            className="scroller-track gap-6"
+            style={{ 
+              animationPlayState: isPaused ? 'paused' : 'running',
+            }}
+        >
+          {loopedTestimonials.map((review, index) => (
+            <div 
+              key={`${review.id}-${index}`}
+              onClick={() => handleReviewClick(review)}
+              className="w-[300px] md:w-[380px] bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex-shrink-0 relative group hover:shadow-md transition-all duration-300 cursor-pointer"
+            >
+              {/* Platform Icon - removed per user request */}
               
-              <div className="flex items-center gap-4 pt-4 border-t border-slate-100">
-                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500 text-sm">
-                  {TESTIMONIALS[active].name.charAt(0)}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-600 text-xs tracking-tighter">
+                  {review.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-base text-slate-900">{TESTIMONIALS[active].name}</h4>
-                  <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">{TESTIMONIALS[active].role}</p>
+                  <h4 className="font-bold text-sm text-slate-900 leading-tight">{review.name}</h4>
+                  <p className="text-slate-400 text-[10px] font-medium">2 weeks ago</p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="text-center pt-8">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Experience the JAJD standard for yourself</p>
-          <button 
-            onClick={onOpenQuote}
-            className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-md font-bold uppercase tracking-wider hover:bg-[#FACC15] hover:text-slate-900 transition-all shadow-lg text-xs group active:scale-95"
-          >
-            Request Free Quote <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-          </button>
+              <div className="flex gap-0.5 text-[#FACC15] mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                ))}
+              </div>
+
+              <p className="text-sm text-slate-600 leading-relaxed line-clamp-4">
+                "{review.content}"
+              </p>
+
+              <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2">
+                 <div className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Verified Customer
+                 </div>
+                 <span className="text-xs text-slate-400 ml-auto font-medium">{review.role}</span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+
+      <div className="text-center pt-8">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Click any review to read details</p>
+        <button 
+          onClick={onOpenQuote}
+          className="inline-flex items-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-md font-bold uppercase tracking-wider hover:bg-[#FACC15] hover:text-slate-900 transition-all shadow-lg text-xs group active:scale-95"
+        >
+          Request Free Quote <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+        </button>
+      </div>
+
+      {/* Focused Review Overlay */}
+      {activeReview && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200" onClick={closeReview}>
+          <div 
+            className="bg-white max-w-2xl w-full p-12 rounded-2xl shadow-2xl relative animate-in zoom-in-95 duration-300 border-2 border-[#FACC15]"
+            onClick={(e) => e.stopPropagation()}
+          >
+             <button onClick={closeReview} className="absolute top-4 right-4 text-slate-400 hover:text-slate-900">
+                <ArrowRight className="w-6 h-6 rotate-45" /> {/* Close Icon */}
+             </button>
+
+             <div className="flex justify-center mb-6">
+                <div className="flex gap-2 text-[#FACC15]">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-8 h-8 fill-current drop-shadow-md" />
+                  ))}
+                </div>
+             </div>
+
+             <Quote className="w-16 h-16 text-slate-100 mx-auto mb-6" />
+
+             <p className="text-2xl md:text-3xl font-medium text-slate-900 text-center leading-relaxed mb-10">
+               "{activeReview.content}"
+             </p>
+
+             <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 bg-[#FACC15] rounded-full flex items-center justify-center font-bold text-slate-900 text-2xl mb-2 shadow-lg">
+                  {activeReview.name.charAt(0)}
+                </div>
+                <h4 className="font-bold text-xl text-slate-900">{activeReview.name}</h4>
+                <p className="text-slate-500 font-bold uppercase tracking-wider text-sm">{activeReview.role}</p>
+             </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

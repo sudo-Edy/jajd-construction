@@ -20,6 +20,7 @@ export interface Testimonial {
   role: string;
   content: string;
   rating: number;
+  platform?: 'google' | 'thumbtack' | 'bbb';
 }
 
 export interface BlogPost {

@@ -11,6 +11,7 @@ import ZipSearch from './components/ZipSearch';
 import About from './components/About';
 import QuoteModal from './components/QuoteModal';
 import RecentWork from './components/RecentWork';
+import BookingCalendar from './components/BookingCalendar';
 import AdminPanel from './components/admin/AdminPanel';
 import DarkModeToggle from './components/DarkModeToggle';
 import { MessageSquare, X, ArrowRight, ShieldCheck, Clock } from 'lucide-react';
@@ -31,6 +32,18 @@ function App() {
   };
 
   // Exit intent logic
+  // Exit intent logic - Wait 2s before allowing (easier for testing)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasShownExitIntent(false); 
+    }, 2000);
+    
+    // Initially disable popup
+    setHasShownExitIntent(true);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     const handleMouseLeave = (e: MouseEvent) => {
       if (e.clientY <= 0 && !hasShownExitIntent && !isQuoteOpen) {
@@ -58,7 +71,7 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white transition-colors duration-300">
       <Header onOpenQuote={() => handleOpenQuote()} />
       
       <main id="main-content">
@@ -68,44 +81,10 @@ function App() {
 
         <RecentWork />
         <Services onOpenQuote={() => handleOpenQuote()} />
-        <Process onOpenQuote={() => handleOpenQuote()} />
+        <BookingCalendar onOpenQuote={() => handleOpenQuote()} />
         <About />
 
-        <section aria-labelledby="cta-heading" className="py-24 px-6">
-          <div className="max-w-7xl mx-auto bg-slate-900 rounded-[4rem] p-12 md:p-24 relative overflow-hidden group border-b-8 border-[#FACC15]">
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FACC15]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-            <div className="relative z-10 grid md:grid-cols-2 gap-16 items-center">
-              <div className="space-y-10">
-                <h2 id="cta-heading" className="text-5xl md:text-7xl font-black text-white leading-tight">
-                  Start Your <br />
-                  <span className="text-[#FACC15]">Master Build.</span>
-                </h2>
-                <p className="text-white/60 text-xl leading-relaxed font-medium">
-                  Whether it's a luxury residential remodel or a large-scale commercial project, our master crews are ready. Book your free estimate today.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <button 
-                    onClick={() => handleOpenQuote()}
-                    className="bg-[#FACC15] text-slate-900 px-12 py-6 rounded-2xl font-black uppercase tracking-[0.2em] hover:bg-white transition-all duration-300 transform group-hover:scale-105 shadow-2xl text-xs"
-                  >
-                    Request Free Estimate
-                  </button>
-                </div>
-              </div>
-              <div className="hidden md:block">
-                <div className="relative aspect-square">
-                  <div className="absolute inset-0 border-4 border-[#FACC15]/20 rounded-[4rem] translate-x-8 translate-y-8" />
-                  <img 
-                    src="https://images.unsplash.com/photo-1590644365607-1c5a519a7a37?auto=format&fit=crop&q=80&w=800" 
-                    className="w-full h-full object-cover rounded-[4rem] shadow-2xl transition-all duration-700"
-                    alt="JAJD Construction Project Manager"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <Process onOpenQuote={() => handleOpenQuote()} />
 
         <Testimonials onOpenQuote={() => handleOpenQuote()} />
         <Sources />
@@ -126,23 +105,23 @@ function App() {
 
       {/* Exit Intent Nudge */}
       {showExitIntent && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-md">
-          <div className="bg-white rounded-[2.5rem] max-w-lg w-full p-10 md:p-14 relative shadow-2xl animate-in zoom-in duration-300">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
+          <div className="bg-white rounded-sm max-w-lg w-full p-10 md:p-14 relative shadow-2xl animate-in zoom-in duration-300 ring-1 ring-slate-900/5">
             <button 
               onClick={() => setShowExitIntent(false)}
-              className="absolute top-6 right-6 text-slate-400 hover:text-slate-900"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-900 z-10"
             >
               <X size={24} />
             </button>
             <div className="space-y-6 text-center">
-              <div className="w-20 h-20 bg-[#FACC15]/10 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-20 h-20 bg-[#FACC15]/10 rounded-none flex items-center justify-center mx-auto">
                  <ShieldCheck className="w-10 h-10 text-[#FACC15]" />
               </div>
               <h3 className="text-3xl font-black text-slate-900">Wait! Get a free estimate before you go.</h3>
-              <p className="text-slate-500 font-medium">Our master crews have limited availability for Summer 2024. Lock in your consultation now—it takes less than a minute.</p>
+              <p className="text-slate-500 font-medium">Our master crews have limited availability for 2026. Lock in your consultation now—it takes less than a minute.</p>
               <button 
                 onClick={() => handleOpenQuote()}
-                className="w-full bg-slate-900 text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all flex items-center justify-center gap-3"
+                className="w-full bg-slate-900 text-white py-6 rounded-sm font-black uppercase tracking-widest text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all flex items-center justify-center gap-3"
               >
                 Request My Free Quote <ArrowRight size={16} />
               </button>

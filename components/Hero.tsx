@@ -31,9 +31,9 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] drop-shadow-lg">
-            Omaha's Premier <br />
-            <span className="text-[#FACC15]">Painting & Reno</span> <br />
-            Experts.
+            Omaha's Premium <br />
+            <span className="text-[#FACC15]">Residential & Commercial</span> <br />
+            Contractors.
           </h1>
           
           <p className="text-lg md:text-xl text-white/90 max-w-lg leading-relaxed font-medium drop-shadow-md">

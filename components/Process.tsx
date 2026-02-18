@@ -23,10 +23,14 @@ const Process: React.FC<ProcessProps> = ({ onOpenQuote }) => {
           <div className="hidden lg:block absolute top-[3.25rem] left-0 w-full h-px bg-slate-200 z-0" />
           
           {PROCESS_STEPS.map((step, index) => (
-            <div key={index} className="relative z-10 group">
-              <div className="bg-white border border-slate-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-[#FACC15]/30 transition-all duration-300 group-hover:-translate-y-1 h-full">
-                <div className="w-12 h-12 bg-slate-50 border border-slate-100 rounded-md flex items-center justify-center group-hover:bg-[#FACC15] group-hover:text-slate-900 transition-colors shadow-sm text-slate-500">
-                  {step.icon}
+            <div key={index} className="relative z-10 group cursor-default">
+              {/* Colored Bloom - Permanent but stronger on hover */}
+              <div className="absolute inset-0 bg-[#FACC15] rounded-lg blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 -z-10" />
+              
+              <div className="bg-white border border-slate-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-[#FACC15] transition-all duration-300 group-hover:-translate-y-1 h-full relative">
+                {/* Icon Container - Permanent Yellow */}
+                <div className="w-20 h-20 bg-[#FACC15] border border-[#eab308] rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md text-slate-900">
+                  {React.cloneElement(step.icon as React.ReactElement<{ className?: string }>, { className: "w-10 h-10 stroke-[1.5]" })}
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 mb-2">

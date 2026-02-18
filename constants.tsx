@@ -16,22 +16,22 @@ import { ProcessStep, Testimonial, ServiceCardProps, BlogPost } from './types';
 
 export const PROCESS_STEPS: ProcessStep[] = [
   {
-    icon: <ClipboardCheck className="w-8 h-8 text-[#FACC15]" />,
+    icon: <ClipboardCheck />,
     title: "Request a Free Estimate",
     description: "Start with a detailed project request. We gather initial requirements to ensure the right experts are assigned."
   },
   {
-    icon: <UserCheck className="w-8 h-8 text-[#FACC15]" />,
+    icon: <UserCheck />,
     title: "On-Site Consultation",
     description: "A master contractor visits your site to perform a professional assessment and discuss design goals."
   },
   {
-    icon: <Construction className="w-8 h-8 text-[#FACC15]" />,
+    icon: <Construction />,
     title: "Detailed Project Plan",
     description: "We provide a comprehensive scope of work, transparent pricing, and a realistic timeline for your build."
   },
   {
-    icon: <Hammer className="w-8 h-8 text-[#FACC15]" />,
+    icon: <Hammer />,
     title: "Professional Execution",
     description: "Our certified crews manage the build with precision, keeping you updated at every major milestone."
   }
@@ -95,9 +95,46 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
-  { id: 1, name: "Thumbtack Review", role: "Exterior Painting", content: "Great customer service and job completion. I would definitely hire them again for future projects.", rating: 5 },
-  { id: 2, name: "BBB Review", role: "Whole Home Painting", content: "They exceeded our expectations and did a fantastic job. Professional, on-time, and great results.", rating: 5 },
-  { id: 3, name: "Google Review", role: "Interior Renovation", content: "Excellent and very professional work. The team was friendly, efficient, and ensured a thorough cleanup.", rating: 5 }
+  { 
+    id: 1, 
+    name: "Ray Anderson", 
+    role: "Door Refinishing", 
+    content: "Extremely responsive, great quality and very professional. We had 2 oak doors that needed to be sanded and re-stained. Excellent results! Highly recommend. Thank you JAJD team.", 
+    rating: 5, 
+    platform: 'google' 
+  },
+  { 
+    id: 2, 
+    name: "Richard L.", 
+    role: "Whole Home Painting", 
+    content: "JAJD exceeded my expectations by a mile. From the first meeting before receiving a very detailed estimate until the final day of work they were EXCELLENT!", 
+    rating: 5, 
+    platform: 'bbb' 
+  },
+  { 
+    id: 3, 
+    name: "Zachary Zach", 
+    role: "Exterior Painting", 
+    content: "Company is responsive, dependable and very easy to work with. Will HIGHLY recommend to any family/friends looking for painters.", 
+    rating: 5, 
+    platform: 'google' 
+  },
+  { 
+    id: 4, 
+    name: "Deanna M.", 
+    role: "Interior Painting", 
+    content: "JAJD painted my house and did a fantastic job! I would hire them again in a heartbeat!", 
+    rating: 5, 
+    platform: 'bbb' 
+  },
+  { 
+    id: 5, 
+    name: "Denise U.", 
+    role: "Repeat Customer", 
+    content: "This is the second time I have used JAJD Painting. The first time was February 2023. As before, they did an amazing job.", 
+    rating: 5, 
+    platform: 'bbb' 
+  }
 ];
 
 export const MOCK_BRANCHES = [

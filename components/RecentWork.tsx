@@ -92,32 +92,44 @@ const RecentWork = () => {
                return (
                  <div 
                    key={project.id} 
-                   className="group relative rounded-lg overflow-hidden aspect-[4/5] cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500"
+                   className="group relative cursor-pointer"
                    onClick={() => handleProjectClick(project)}
                  >
-                    <img 
-                      src={project.thumbnail_url} 
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    {/* Ambilight / Bloom Effect */}
+                    <div 
+                      className="absolute inset-0 translate-y-4 bg-cover bg-center rounded-2xl opacity-0 group-hover:opacity-60 blur-2xl transition-all duration-700 pointer-events-none"
+                      style={{ 
+                        backgroundImage: `url(${project.thumbnail_url})`,
+                        transform: 'scale(0.95) translateY(10px)', 
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-90 transition-opacity" />
-                    
-                    {/* Photo count badge */}
-                    {imageCount > 0 && (
-                      <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                        <ImageIcon className="w-3 h-3" />
-                        <span className="text-[10px] font-bold">{imageCount}</span>
-                      </div>
-                    )}
-                    
-                    <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                       <div className="flex items-center gap-2 text-[#FACC15] text-xs font-bold uppercase tracking-wider mb-2">
-                         <MapPin className="w-4 h-4" /> {project.location}
-                       </div>
-                       <h3 className="text-xl font-bold text-white mb-2 leading-tight">{project.title}</h3>
-                       <p className="text-white/80 text-sm font-medium line-clamp-2">
-                         {project.description}
-                       </p>
+
+                    {/* Main Card Content */}
+                    <div className="relative rounded-lg overflow-hidden aspect-[4/5] shadow-md group-hover:shadow-2xl transition-all duration-500 bg-slate-900 border border-slate-200/50">
+                        <img 
+                          src={project.thumbnail_url} 
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-90 transition-opacity" />
+                        
+                        {/* Photo count badge */}
+                        {imageCount > 0 && (
+                          <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/20 text-white px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                            <ImageIcon className="w-3 h-3" />
+                            <span className="text-[10px] font-bold">{imageCount}</span>
+                          </div>
+                        )}
+                        
+                        <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          <div className="flex items-center gap-2 text-[#FACC15] text-xs font-bold uppercase tracking-wider mb-2">
+                            <MapPin className="w-4 h-4" /> {project.location}
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-2 leading-tight">{project.title}</h3>
+                          <p className="text-white/80 text-sm font-medium line-clamp-2">
+                            {project.description}
+                          </p>
+                        </div>
                     </div>
                  </div>
                );

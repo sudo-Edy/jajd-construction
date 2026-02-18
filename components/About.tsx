@@ -4,14 +4,23 @@ import { Award, Target, Users, Construction } from 'lucide-react';
 
 const About: React.FC = () => {
   return (
-    <section id="about us" className="py-24 bg-white relative overflow-hidden border-b border-slate-100">
+    <section id="about us" className="py-24 bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden border-b border-slate-100 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
-          <div className="relative">
-            <div className="absolute inset-0 bg-[#FACC15] -rotate-2 rounded-lg -z-10 translate-x-2 translate-y-2 opacity-50" />
+          <div className="relative group cursor-pointer">
+            {/* Ambilight / Bloom Effect */}
+            <div 
+              className="absolute inset-0 translate-y-4 bg-cover bg-center rounded-2xl opacity-0 group-hover:opacity-60 blur-2xl transition-all duration-700 pointer-events-none"
+              style={{ 
+                backgroundImage: `url(https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800)`,
+                transform: 'scale(0.95) translateY(10px)', 
+              }}
+            />
+            
+            <div className="absolute inset-0 bg-[#FACC15] -rotate-2 rounded-lg -z-10 translate-x-2 translate-y-2 opacity-50 transition-opacity group-hover:opacity-0" />
             <img 
               src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800" 
-              className="rounded-lg shadow-2xl grayscale hover:grayscale-0 transition-all duration-700"
+              className="rounded-lg shadow-2xl grayscale group-hover:grayscale-0 transition-all duration-700 relative z-10"
               alt="JAJD Construction Crew"
             />
             <div className="absolute -bottom-6 -right-6 bg-slate-900 text-white p-8 rounded-lg shadow-2xl hidden md:block border border-slate-800">
