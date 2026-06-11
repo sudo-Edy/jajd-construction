@@ -131,7 +131,7 @@ const ProjectGalleryModal: React.FC<ProjectGalleryModalProps> = ({ isOpen, onClo
                     onClick={() => jumpToImage(index)}
                     className={`relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 transition-all ${
                       index === currentImageIndex
-                        ? 'ring-2 ring-[#FACC15] ring-offset-2 ring-offset-slate-900'
+                        ? 'ring-2 ring-brand-400 ring-offset-2 ring-offset-slate-900'
                         : 'opacity-50 hover:opacity-100 hover:scale-105'
                     }`}
                   >
@@ -153,7 +153,7 @@ const ProjectGalleryModal: React.FC<ProjectGalleryModalProps> = ({ isOpen, onClo
             <div className="space-y-6">
               {/* Header Info */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[#FACC15]">
+                <div className="flex items-center gap-2 text-brand-400">
                   <MapPin className="w-4 h-4" />
                   <span className="font-bold uppercase tracking-widest text-xs">{project.location}</span>
                 </div>

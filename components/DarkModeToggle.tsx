@@ -14,7 +14,7 @@ const DarkModeToggle: React.FC = () => {
     >
       <div className="flex items-center gap-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-5 py-3 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all border-2 border-slate-200 dark:border-slate-700">
         {isDarkMode ? (
-          <Sun size={18} className="text-[#FACC15]" />
+          <Sun size={18} className="text-brand-400" />
         ) : (
           <Moon size={18} className="text-slate-600" />
         )}

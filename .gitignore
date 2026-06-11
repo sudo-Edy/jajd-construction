@@ -34,3 +34,16 @@ public/videos/*.mp4
 .env.*.local
 backend/.env
 backend/.env.local
+
+# Environment files (never commit)
+.env.development
+.env.production
+
+# Verification screenshots
+scripts/verify-output/
+
+# Claude-flow / ruflo tooling artifacts (machine-local, never commit)
+.claude/
+.swarm/
+.claude-flow/
+ruvector.db

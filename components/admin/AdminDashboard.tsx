@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../utils/supabase';
 import { Project } from '../../types';
-import { Plus, Edit, Trash2, Eye, EyeOff, LogOut, Loader2, GripVertical } from 'lucide-react';
+import {
+  Plus, Edit, Trash2, Eye, EyeOff, LogOut, Loader2, GripVertical,
+  BarChart3, FolderKanban, Wrench, Palette, Search, HardHat, ExternalLink,
+} from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -19,22 +22,29 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import ServicesManager from './ServicesManager';
+import AnalyticsDashboard from './AnalyticsDashboard';
+import SeoManager from './SeoManager';
+import AppearanceManager from './AppearanceManager';
 
 interface AdminDashboardProps {
   onLogout: () => void;
   onEditProject: (project: Project | null) => void;
 }
 
-// Sortable Item Component
+type AdminTab = 'analytics' | 'projects' | 'services' | 'appearance' | 'seo';
+
+const TABS: { id: AdminTab; label: string; icon: React.ElementType; blurb: string }[] = [
+  { id: 'analytics', label: 'Analytics', icon: BarChart3, blurb: 'Visits, humans vs bots, clicks & leads' },
+  { id: 'projects', label: 'Projects', icon: FolderKanban, blurb: 'Portfolio gallery manager' },
+  { id: 'services', label: 'Services', icon: Wrench, blurb: 'What you offer on the site' },
+  { id: 'appearance', label: 'Appearance', icon: Palette, blurb: 'Use your photos as site backgrounds' },
+  { id: 'seo', label: 'SEO', icon: Search, blurb: 'Title, description & search preview' },
+];
+
+// Sortable project row
 const SortableProjectItem = ({ project, onEdit, onDelete, onTogglePublish }: { project: Project, onEdit: (p: Project) => void, onDelete: (p: Project) => void, onTogglePublish: (p: Project) => void }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: project.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: project.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -47,26 +57,23 @@ const SortableProjectItem = ({ project, onEdit, onDelete, onTogglePublish }: { p
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-lg p-6 flex items-center gap-6 hover:shadow-md transition-shadow border border-slate-100 ${isDragging ? 'shadow-2xl ring-2 ring-[#FACC15]' : ''}`}
+      className={`bg-white rounded-2xl p-5 flex items-center gap-5 hover:shadow-card transition-shadow border border-slate-200 ${isDragging ? 'shadow-2xl ring-2 ring-brand-400' : ''}`}
     >
-      {/* Drag Handle */}
       <div {...attributes} {...listeners} className="cursor-grab hover:text-slate-900 text-slate-400 p-2">
-        <GripVertical className="w-6 h-6" />
+        <GripVertical className="w-5 h-5" />
       </div>
 
-      {/* Thumbnail */}
       <img
         src={project.thumbnail_url}
         alt={project.title}
-        className="w-24 h-24 object-cover rounded-md flex-shrink-0 bg-slate-100"
+        className="w-20 h-20 object-cover rounded-xl flex-shrink-0 bg-slate-100"
       />
 
-      {/* Project info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-4 mb-1">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">{project.title}</h3>
-            <p className="text-slate-500 font-medium text-xs uppercase tracking-wide">{project.location}</p>
+            <h3 className="text-base font-bold text-slate-900">{project.title}</h3>
+            <p className="text-slate-500 font-medium text-xs">{project.location}</p>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {project.is_published ? (
@@ -80,36 +87,31 @@ const SortableProjectItem = ({ project, onEdit, onDelete, onTogglePublish }: { p
             )}
           </div>
         </div>
-        <p className="text-slate-600 line-clamp-1 mb-2 text-sm">{project.description}</p>
-        <div className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <p className="text-slate-600 line-clamp-1 mb-1.5 text-sm">{project.description}</p>
+        <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
           <span>{project.images?.length || 0} photos</span>
           {project.completion_date && <span>• {project.completion_date}</span>}
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
           onClick={() => onTogglePublish(project)}
-          className="p-2 rounded-md hover:bg-slate-50 transition-colors text-slate-400 hover:text-slate-900"
+          className="p-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-400 hover:text-slate-900"
           title={project.is_published ? 'Unpublish' : 'Publish'}
         >
-          {project.is_published ? (
-            <EyeOff className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
+          {project.is_published ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
         <button
           onClick={() => onEdit(project)}
-          className="p-2 rounded-md hover:bg-slate-50 transition-colors text-slate-400 hover:text-blue-600"
+          className="p-2 rounded-lg hover:bg-slate-50 transition-colors text-slate-400 hover:text-blue-600"
           title="Edit project"
         >
           <Edit className="w-4 h-4" />
         </button>
         <button
           onClick={() => onDelete(project)}
-          className="p-2 rounded-md hover:bg-red-50 transition-colors text-slate-400 hover:text-red-600"
+          className="p-2 rounded-lg hover:bg-red-50 transition-colors text-slate-400 hover:text-red-600"
           title="Delete project"
         >
           <Trash2 className="w-4 h-4" />
@@ -119,24 +121,15 @@ const SortableProjectItem = ({ project, onEdit, onDelete, onTogglePublish }: { p
   );
 };
 
-import ServicesManager from './ServicesManager';
-
-interface AdminDashboardProps {
-  onLogout: () => void;
-  onEditProject: (project: Project | null) => void;
-}
-
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject }) => {
-  const [activeTab, setActiveTab] = useState<'projects' | 'services'>('projects');
+  const [activeTab, setActiveTab] = useState<AdminTab>('analytics');
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
   useEffect(() => {
@@ -150,14 +143,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
 
       const { data, error: fetchError } = await supabase
         .from('projects')
-        .select(`
-          *,
-          images:project_images(*)
-        `)
+        .select(`*, images:project_images(*)`)
         .order('display_order', { ascending: true });
 
       if (fetchError) throw fetchError;
-
       setProjects(data || []);
     } catch (err: any) {
       console.error('Error fetching projects:', err);
@@ -169,16 +158,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-
     if (active.id !== over?.id) {
       setProjects((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
         const newItems = arrayMove(items, oldIndex, newIndex);
-        
-        // Update display_order in Supabase for all affected items
         updateProjectOrder(newItems);
-        
         return newItems;
       });
     }
@@ -186,22 +171,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
 
   const updateProjectOrder = async (orderedProjects: Project[]) => {
     try {
-      // In a real app, you'd want to optimize this to only update changed items
-      // or use a batch update RPC function.
       const updates = orderedProjects.map((project, index) => ({
         id: project.id,
         display_order: index,
       }));
-
       for (const update of updates) {
          await supabase
           .from('projects')
           .update({ display_order: update.display_order })
           .eq('id', update.id);
       }
-      
     } catch (error) {
-      console.error("Failed to update order:", error);
+      console.error('Failed to update order:', error);
     }
   };
 
@@ -213,9 +194,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
         .eq('id', project.id);
 
       if (updateError) throw updateError;
-      
-      // Update local state without refetching to preserve drag order
-      setProjects(prev => prev.map(p => 
+      setProjects(prev => prev.map(p =>
         p.id === project.id ? { ...p, is_published: !p.is_published } : p
       ));
     } catch (err: any) {
@@ -228,7 +207,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
     if (!confirm(`Are you sure you want to delete "${project.title}"? This cannot be undone.`)) {
       return;
     }
-
     try {
       const { error: deleteError } = await supabase
         .from('projects')
@@ -236,7 +214,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
         .eq('id', project.id);
 
       if (deleteError) throw deleteError;
-      
       setProjects(prev => prev.filter(p => p.id !== project.id));
     } catch (err: any) {
       console.error('Error deleting project:', err);
@@ -244,122 +221,161 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, onEditProject
     }
   };
 
+  const activeTabData = TABS.find(t => t.id === activeTab)!;
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b-2 border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900">Project Gallery Manager</h1>
-            <p className="text-slate-500 font-medium mt-1">Drag and drop to reorder projects</p>
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Sidebar */}
+      <aside className="hidden md:flex flex-col w-64 bg-navy text-white min-h-screen sticky top-0 max-h-screen">
+        <div className="p-6 border-b border-white/10 flex items-center gap-2.5">
+          <div className="bg-brand-400 p-1.5 rounded-lg">
+            <HardHat className="w-5 h-5 text-navy" />
           </div>
+          <div>
+            <p className="font-extrabold tracking-tight leading-tight">JAJD Admin</p>
+            <p className="text-[10px] text-white/50 font-semibold uppercase tracking-wider">Command Center</p>
+          </div>
+        </div>
+
+        <nav className="flex-1 p-4 space-y-1">
+          {TABS.map(({ id, label, icon: Icon, blurb }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`w-full flex items-start gap-3 px-4 py-3 rounded-xl text-left transition-colors ${
+                activeTab === id ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <Icon size={18} className={activeTab === id ? 'text-brand-400 mt-0.5' : 'mt-0.5'} />
+              <span>
+                <span className="block text-sm font-bold">{label}</span>
+                <span className="block text-[11px] text-white/40 leading-tight mt-0.5">{blurb}</span>
+              </span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-white/10 space-y-2">
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener"
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-colors text-sm font-semibold"
+          >
+            <ExternalLink size={15} /> View live site
+          </a>
           <button
             onClick={onLogout}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors text-xs uppercase tracking-wider"
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-white/60 hover:bg-white/5 hover:text-white transition-colors text-sm font-semibold"
           >
-            <LogOut className="w-4 h-4" />
-            Logout
+            <LogOut size={15} /> Log out
           </button>
         </div>
-      </header>
+      </aside>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Navigation Tabs */}
-        <div className="flex gap-4 mb-8 border-b-2 border-slate-200 pb-1">
-          <button
-            onClick={() => setActiveTab('projects')}
-            className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${
-              activeTab === 'projects'
-                ? 'text-slate-900 border-b-2 border-[#FACC15] -mb-1.5'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            Projects
-          </button>
-          <button
-            onClick={() => setActiveTab('services')}
-            className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${
-              activeTab === 'services'
-                ? 'text-slate-900 border-b-2 border-[#FACC15] -mb-1.5'
-                : 'text-slate-400 hover:text-slate-600'
-            }`}
-          >
-            Services
-          </button>
+      {/* Main */}
+      <div className="flex-1 min-w-0">
+        {/* Mobile top bar */}
+        <div className="md:hidden bg-navy text-white px-4 py-3 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-2">
+            <div className="bg-brand-400 p-1 rounded-md"><HardHat className="w-4 h-4 text-navy" /></div>
+            <span className="font-extrabold text-sm">JAJD Admin</span>
+          </div>
+          <button onClick={onLogout} className="text-white/70 p-2" aria-label="Log out"><LogOut size={18} /></button>
+        </div>
+        <div className="md:hidden bg-white border-b border-slate-200 px-2 py-2 flex gap-1 overflow-x-auto sticky top-[52px] z-20">
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+                activeTab === id ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'
+              }`}
+            >
+              <Icon size={14} /> {label}
+            </button>
+          ))}
         </div>
 
-        {activeTab === 'services' ? (
-          <ServicesManager />
-        ) : (
-          <>
-            {/* Add new project button */}
-            <div className="mb-8">
-              <button
-                onClick={() => onEditProject(null)}
-                className="flex items-center gap-3 px-8 py-4 bg-[#FACC15] text-slate-900 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all shadow-xl"
-              >
-                <Plus className="w-5 h-5" />
-                Add New Project
-              </button>
-            </div>
+        <main className="p-6 md:p-10 max-w-6xl">
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">{activeTabData.label}</h1>
+            <p className="text-slate-500 mt-1">{activeTabData.blurb}</p>
+          </div>
 
-            {/* Loading state */}
-            {loading && (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-[#FACC15] animate-spin" />
-              </div>
-            )}
+          {activeTab === 'analytics' && <AnalyticsDashboard />}
+          {activeTab === 'seo' && <SeoManager />}
+          {activeTab === 'appearance' && <AppearanceManager />}
+          {activeTab === 'services' && <ServicesManager />}
 
-            {/* Error state */}
-            {error && !loading && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
-                <p className="text-red-800 font-bold">{error}</p>
+          {activeTab === 'projects' && (
+            <>
+              <div className="mb-6">
                 <button
-                  onClick={fetchProjects}
-                  className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700"
+                  onClick={() => onEditProject(null)}
+                  className="flex items-center gap-2.5 px-6 py-3.5 bg-brand-400 text-slate-900 rounded-xl font-bold hover:bg-slate-900 hover:text-white transition-all shadow-card"
                 >
-                  Try Again
+                  <Plus className="w-5 h-5" />
+                  Add New Project
                 </button>
               </div>
-            )}
 
-            {/* Projects list */}
-            {!loading && !error && (
-              <div className="space-y-4">
-                {projects.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-12 text-center">
-                    <p className="text-slate-500 text-lg font-medium">
-                      No projects yet. Click "Add New Project" to get started!
-                    </p>
-                  </div>
-                ) : (
-                  <DndContext 
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+              {loading && (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />
+                </div>
+              )}
+
+              {error && !loading && (
+                <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
+                  <p className="text-red-800 font-bold">{error}</p>
+                  <button
+                    onClick={fetchProjects}
+                    className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700"
                   >
-                    <SortableContext 
-                      items={projects.map(p => p.id)}
-                      strategy={verticalListSortingStrategy}
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {!loading && !error && (
+                <div className="space-y-4">
+                  {projects.length === 0 ? (
+                    <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
+                      <p className="text-slate-500 text-lg font-medium">
+                        No projects yet. Click "Add New Project" to get started!
+                      </p>
+                    </div>
+                  ) : (
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
                     >
-                      <div className="space-y-4">
-                        {projects.map((project) => (
-                          <SortableProjectItem 
-                            key={project.id} 
-                            project={project} 
-                            onEdit={onEditProject}
-                            onDelete={handleDelete}
-                            onTogglePublish={handleTogglePublish}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                  </DndContext>
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </main>
+                      <SortableContext
+                        items={projects.map(p => p.id)}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-4">
+                          {projects.map((project) => (
+                            <SortableProjectItem
+                              key={project.id}
+                              project={project}
+                              onEdit={onEditProject}
+                              onDelete={handleDelete}
+                              onTogglePublish={handleTogglePublish}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </main>
+      </div>
     </div>
   );
 };

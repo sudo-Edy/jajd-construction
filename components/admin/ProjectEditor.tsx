@@ -262,7 +262,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium"
                   placeholder="Kitchen Cabinet Refinish"
                 />
               </div>
@@ -276,7 +276,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium"
                   placeholder="Papillion, NE"
                 />
               </div>
@@ -292,7 +292,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                 onChange={(e) => setDescription(e.target.value)}
                 required
                 rows={2}
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium resize-none"
                 placeholder="Brief description shown on project card"
               />
             </div>
@@ -306,7 +306,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium resize-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium resize-none"
                 placeholder="Full details shown in the gallery modal"
               />
             </div>
@@ -321,7 +321,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                   type="text"
                   value={completionDate}
                   onChange={(e) => setCompletionDate(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium"
                   placeholder="January 2024"
                 />
               </div>
@@ -334,7 +334,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                   type="number"
                   value={displayOrder}
                   onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium"
                   placeholder="0"
                 />
               </div>
@@ -343,7 +343,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                 <label className="block text-slate-900 font-black uppercase tracking-widest text-xs mb-3">
                   Status
                 </label>
-                <label className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-[#FACC15] transition-colors">
+                <label className="flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-slate-200 cursor-pointer hover:border-brand-400 transition-colors">
                   <input
                     type="checkbox"
                     checked={isPublished}
@@ -382,7 +382,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                       type="button"
                       onClick={() => thumbnailInputRef.current?.click()}
                       disabled={thumbnailUploading}
-                      className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-brand-400 hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {thumbnailUploading ? 'Uploading...' : 'Upload Thumbnail'}
                     </button>
@@ -434,7 +434,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
 
                         {/* Thumbnail indicator */}
                         {image.image_url === thumbnailUrl && (
-                          <div className="absolute top-2 left-2 bg-[#FACC15] text-slate-900 px-2 py-1 rounded-lg flex items-center gap-1">
+                          <div className="absolute top-2 left-2 bg-brand-400 text-slate-900 px-2 py-1 rounded-lg flex items-center gap-1">
                             <Star className="w-3 h-3 fill-current" />
                             <span className="text-xs font-black">Thumbnail</span>
                           </div>
@@ -446,7 +446,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
                             <button
                               type="button"
                               onClick={() => handleSetThumbnail(image.image_url)}
-                              className="px-3 py-2 bg-[#FACC15] text-slate-900 rounded-lg text-xs font-black hover:bg-white transition-colors"
+                              className="px-3 py-2 bg-brand-400 text-slate-900 rounded-lg text-xs font-black hover:bg-white transition-colors"
                             >
                               Set as Thumbnail
                             </button>
@@ -491,7 +491,7 @@ const ProjectEditor: React.FC<ProjectEditorProps> = ({ project, onClose, onSave 
             type="submit"
             form="project-form" // Link to form
             disabled={loading}
-            className="px-8 py-4 bg-[#FACC15] text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg"
+            className="px-8 py-4 bg-brand-400 text-slate-900 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-slate-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg"
           >
             {loading ? (
               <>

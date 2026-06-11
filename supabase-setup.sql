@@ -106,7 +106,7 @@ VALUES
     'Full stucco repair and repaint',
     'Complete exterior transformation including stucco repair, surface preparation, and professional-grade paint application. The project restored the home''s curb appeal and added years of weather protection.',
     'January 2024',
-    'https://images.unsplash.com/photo-1605146769289-44011d143da7?auto=format&fit=crop&q=80&w=800',
+    'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&q=80&w=800',
     1,
     true
   ),
@@ -140,7 +140,7 @@ SELECT
 FROM projects p
 CROSS JOIN (
   VALUES 
-    ('https://images.unsplash.com/photo-1605146769289-44011d143da7?auto=format&fit=crop&q=80&w=800'),
+    ('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&q=80&w=800'),
     ('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800'),
     ('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&q=80&w=800')
 ) AS t(url)

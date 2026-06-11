@@ -37,15 +37,15 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-      <div className="bg-white rounded-[2.5rem] p-12 md:p-16 max-w-md w-full shadow-2xl">
+    <div className="min-h-screen bg-navy flex items-center justify-center p-6">
+      <div className="bg-white rounded-3xl p-10 md:p-14 max-w-md w-full shadow-2xl">
         {/* Logo/Header */}
         <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-[#FACC15] rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-slate-900" />
+          <div className="w-16 h-16 bg-brand-400 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <Lock className="w-8 h-8 text-navy" />
           </div>
-          <h1 className="text-4xl font-black text-slate-900 mb-2">Admin Login</h1>
-          <p className="text-slate-500 font-medium">JAJD Construction Gallery Manager</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-1.5 tracking-tight">Welcome back</h1>
+          <p className="text-slate-500 font-medium">JAJD Construction Command Center</p>
         </div>
 
         {/* Error message */}
@@ -71,7 +71,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium transition-colors"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium transition-colors"
                 placeholder="admin@example.com"
                 disabled={loading}
               />
@@ -91,7 +91,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-[#FACC15] focus:outline-none font-medium transition-colors"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-brand-400 focus:outline-none font-medium transition-colors"
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -102,7 +102,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-400 hover:text-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
           >
             {loading ? (
               <>

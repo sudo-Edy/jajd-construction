@@ -1,17 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { X, CheckCircle2, Home, Building2, ChevronRight, Camera, Calendar, ShieldCheck, Clock, PaintRoller, Brush, Palette, Hammer, Store, Award, Star, ListChecks, Construction, PencilRuler, LayoutGrid, Triangle, AlignJustify, Sun, Layers, Upload, Loader2, Paperclip, Trash2, MapPinIcon, QuoteIcon } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { X, CheckCircle2, Home, Building2, ChevronRight, Camera, Calendar, ShieldCheck, Clock, Award, Star, Triangle, Loader2, Paperclip, Trash2, MapPinIcon, QuoteIcon } from 'lucide-react';
 import { submitLead, uploadLeadAttachment } from '../utils/api';
 import { compressImage } from '../utils/compression';
+import { analytics } from '../utils/analytics';
 import { z } from 'zod';
 import { leadSchema } from '../utils/schema';
+import { resolveEstimateFlow } from '../estimateFlows';
+import EstimateQuestions, { AnswerMap, summarizeAnswers, firstMissingRequired } from './EstimateQuestions';
 
 interface QuoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialZip?: string;
+  /** ISO date (YYYY-MM-DD) pre-selected from the booking calendar. */
+  preferredDate?: string;
+  /** Quote-form service pre-selected from a project card or search ("Roofing", "Cabinets", ...). */
+  initialProject?: string;
+  /** The specific project the visitor picked ("Popcorn Ceiling Removal") — prefills the description. */
+  initialDetail?: string;
 }
 
-const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) => {
+const formatPreferredDate = (iso: string): string => {
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return iso;
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
+  });
+};
+
+const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, preferredDate, initialProject, initialDetail }) => {
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -33,6 +50,16 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  // The questionnaire is chosen from the specific project (or the service type).
+  const flow = useMemo(
+    () => resolveEstimateFlow(initialDetail, initialProject),
+    [initialDetail, initialProject]
+  );
+  const [answers, setAnswers] = useState<AnswerMap>({});
+
+  const handleAnswer = (id: string, value: string | string[]) =>
+    setAnswers(prev => ({ ...prev, [id]: value }));
+
   // Reset modal state when opened
   useEffect(() => {
     if (isOpen) {
@@ -40,12 +67,21 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
       setSubmitted(false);
       setError('');
       setAttachments([]); // Reset attachments
-      setFormData(prev => ({ ...prev, zip: initialZip || prev.zip }));
+      setAnswers({});      // Fresh questionnaire each open
+      setFormData(prev => ({
+        ...prev,
+        zip: initialZip || prev.zip,
+        project: initialProject || prev.project,
+        description: '',
+      }));
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
-  }, [isOpen, initialZip]);
+  }, [isOpen, initialZip, initialProject, initialDetail]);
+
+  // Lock body scroll cleanup on unmount
+  useEffect(() => () => { document.body.style.overflow = 'auto'; }, []);
 
   // Accessibility: Escape Key and Focus Trap
   useEffect(() => {
@@ -60,6 +96,13 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
     try {
       if (step === 1) {
         leadSchema.pick({ zip: true }).parse({ zip: formData.zip });
+      }
+      if (step === 2) {
+        const missing = firstMissingRequired(flow, answers);
+        if (missing) {
+          setError(`Please answer: ${missing.label}`);
+          return false;
+        }
       }
       if (step === 3) {
         leadSchema.pick({ name: true, email: true, phone: true }).parse({
@@ -78,18 +121,51 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
     }
   };
 
+  /** Derive the lead's structured fields + notes summary from the questionnaire. */
+  const buildLeadPayload = () => {
+    const roleAnswer = (role: 'service' | 'size' | 'budget'): string => {
+      const q = flow.questions.find(question => question.role === role);
+      if (!q) return '';
+      const v = answers[q.id];
+      return Array.isArray(v) ? v.join(', ') : (v ?? '');
+    };
+
+    const project = roleAnswer('service') || (flow.service as string) || formData.project || 'Other';
+    const size = roleAnswer('size') || 'Medium';
+    const budget = roleAnswer('budget') || '';
+
+    const summary = summarizeAnswers(flow, answers);
+    const description = [summary, formData.description.trim()].filter(Boolean).join('\n\n');
+
+    return { project, size, budget, description };
+  };
+
+  const MAX_ATTACHMENTS = 5;
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB per image
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      const validFiles = newFiles.filter(file => file.type.startsWith('image/'));
-      
+      const validFiles = newFiles.filter(
+        file => file.type.startsWith('image/') && file.size <= MAX_FILE_SIZE
+      );
+
       if (validFiles.length !== newFiles.length) {
-        setError('Only image files (JPG, PNG, WEBP) are allowed.');
-        // Clear error after 3 seconds
-        setTimeout(() => setError(''), 3000);
+        setError('Only image files (JPG, PNG, WEBP) up to 10 MB are allowed.');
+        setTimeout(() => setError(''), 4000);
       }
 
-      setAttachments(prev => [...prev, ...validFiles]);
+      setAttachments(prev => {
+        const combined = [...prev, ...validFiles];
+        if (combined.length > MAX_ATTACHMENTS) {
+          setError(`Maximum ${MAX_ATTACHMENTS} photos per request.`);
+          setTimeout(() => setError(''), 4000);
+        }
+        return combined.slice(0, MAX_ATTACHMENTS);
+      });
+
+      // Allow re-selecting the same file after removal
+      e.target.value = '';
     }
   };
 
@@ -113,40 +189,38 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
       // Upload attachments if any
       const uploadedUrls: string[] = [];
       if (attachments.length > 0) {
-        console.log(`Starting upload for ${attachments.length} files...`);
         setIsUploading(true);
         for (const file of attachments) {
           try {
-            console.log(`Processing file: ${file.name} (Original size: ${file.size})`);
             const compressedFile = await compressImage(file);
-            console.log(`Compressed size: ${compressedFile.size}`);
-            
             const url = await uploadLeadAttachment(compressedFile);
             if (url) {
-                console.log('Got URL:', url);
                 uploadedUrls.push(url);
-            } else {
-                console.error('Upload failed for file:', file.name);
             }
           } catch (error) {
-             console.error("Failed to process file", file.name, error);
+             console.error('Failed to process an attachment:', error);
           }
         }
         setIsUploading(false);
       }
-      
-      console.log('Final Attachments Payload:', uploadedUrls);
 
       // Final validation & Sanitization before submit
       try {
+        const payload = buildLeadPayload();
         const cleanData = leadSchema.parse({
             ...formData,
+            project: payload.project,
+            size: payload.size,
+            budget: payload.budget,
+            description: payload.description,
+            preferred_date: preferredDate || '',
             attachments: uploadedUrls
         });
-        
+
         const result = await submitLead(cleanData);
         setLoading(false);
         if (result.success) {
+            analytics.leadSubmitted(payload.project, formData.property);
             setSubmitted(true);
         } else {
             setError(result.message || 'Failed to submit. Please try again.');
@@ -188,20 +262,20 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
             <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
                 <div className="flex gap-2 mb-6" aria-hidden="true">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className={`h-1 flex-1 transition-all duration-500 rounded-full ${step >= i ? 'bg-[#FACC15]' : 'bg-slate-200 dark:bg-slate-700'}`} />
+                    <div key={i} className={`h-1 flex-1 transition-all duration-500 rounded-full ${step >= i ? 'bg-brand-400' : 'bg-slate-200 dark:bg-slate-700'}`} />
                   ))}
                 </div>
 
                 <div className="space-y-1">
                   <h2 id="modal-title" className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {step === 1 && "Start Your Build"}
-                    {step === 2 && "Project Scope"}
-                    {step === 3 && "Get Your Free Price"}
+                    {step === 1 && "Start your free estimate"}
+                    {step === 2 && flow.headline}
+                    {step === 3 && "Get your free price"}
                   </h2>
                   <div className="flex items-center justify-between">
                     <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                      {step === 1 && "Select property type and ZIP to connect."}
-                      {step === 2 && "Tell us about the project size and type."}
+                      {step === 1 && "Property type and ZIP to get started."}
+                      {step === 2 && flow.blurb}
                       {step === 3 && "Where can we send your professional estimate?"}
                     </p>
                     <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded">
@@ -226,6 +300,26 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                 )}
 
                 <form id="quote-form" onSubmit={handleSubmit} className="space-y-6">
+                  {initialDetail && (
+                    <div className="p-4 bg-navy/5 dark:bg-white/5 border border-navy/10 dark:border-white/10 rounded-xl flex items-center gap-3.5">
+                      <div className="w-10 h-10 rounded-lg bg-brand-400 text-navy flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-slate-400">Your free estimate for</p>
+                        <p className="text-base font-extrabold text-slate-900 dark:text-white truncate">{initialDetail}</p>
+                      </div>
+                    </div>
+                  )}
+                  {preferredDate && (
+                    <div className="p-4 bg-brand-400/10 border border-brand-400/30 rounded-xl flex items-center gap-3">
+                      <Calendar className="w-5 h-5 text-brand-600 shrink-0" />
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                        Preferred start date: <span className="font-bold">{formatPreferredDate(preferredDate)}</span>
+                        <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">We'll do our best to build your schedule around this date.</span>
+                      </p>
+                    </div>
+                  )}
                   {step === 1 && (
                     <div className="space-y-6 animate-in slide-in-from-right duration-300">
                       <div className="grid grid-cols-2 gap-4">
@@ -233,9 +327,9 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                           type="button"
                           aria-pressed={formData.property === 'Residential'}
                           onClick={() => setFormData({...formData, property: 'Residential'})}
-                          className={`p-5 rounded-xl border-2 transition-all text-left space-y-3 hover:scale-[1.02] active:scale-[0.98] ${formData.property === 'Residential' ? 'border-[#FACC15] bg-[#FACC15]/10 dark:bg-[#FACC15]/10 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-[#FACC15]/50 dark:hover:border-[#FACC15]/50'}`}
+                          className={`p-5 rounded-xl border-2 transition-all text-left space-y-3 hover:scale-[1.02] active:scale-[0.98] ${formData.property === 'Residential' ? 'border-brand-400 bg-brand-400/10 dark:bg-brand-400/10 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-brand-400/50 dark:hover:border-brand-400/50'}`}
                         >
-                          <div className={`p-3 rounded-full w-fit ${formData.property === 'Residential' ? 'bg-[#FACC15] text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                          <div className={`p-3 rounded-full w-fit ${formData.property === 'Residential' ? 'bg-brand-400 text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
                              <Home className="w-6 h-6" />
                           </div>
                           <div>
@@ -247,9 +341,9 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                           type="button"
                           aria-pressed={formData.property === 'Commercial'}
                           onClick={() => setFormData({...formData, property: 'Commercial'})}
-                          className={`p-5 rounded-xl border-2 transition-all text-left space-y-3 hover:scale-[1.02] active:scale-[0.98] ${formData.property === 'Commercial' ? 'border-[#FACC15] bg-[#FACC15]/10 dark:bg-[#FACC15]/10 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-[#FACC15]/50 dark:hover:border-[#FACC15]/50'}`}
+                          className={`p-5 rounded-xl border-2 transition-all text-left space-y-3 hover:scale-[1.02] active:scale-[0.98] ${formData.property === 'Commercial' ? 'border-brand-400 bg-brand-400/10 dark:bg-brand-400/10 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-brand-400/50 dark:hover:border-brand-400/50'}`}
                         >
-                          <div className={`p-3 rounded-full w-fit ${formData.property === 'Commercial' ? 'bg-[#FACC15] text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
+                          <div className={`p-3 rounded-full w-fit ${formData.property === 'Commercial' ? 'bg-brand-400 text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
                              <Building2 className="w-6 h-6" />
                           </div>
                           <div>
@@ -265,7 +359,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                             required 
                             type="text" 
                             maxLength={5}
-                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] transition-all text-lg font-bold text-slate-900 dark:text-white pl-12"
+                            className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 transition-all text-lg font-bold text-slate-900 dark:text-white pl-12"
                             value={formData.zip}
                             onChange={(e) => setFormData({...formData, zip: e.target.value.replace(/\D/g, '')})}
                             placeholder="68022"
@@ -278,18 +372,18 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                       
                       {/* Featured Review */}
                       <div className="bg-slate-50 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 flex gap-4 items-start">
-                        <div className="bg-[#FACC15] text-slate-900 p-2 rounded-full flex-shrink-0">
+                        <div className="bg-brand-400 text-slate-900 p-2 rounded-full flex-shrink-0">
                             <QuoteIcon size={16} fill="currentColor" />
                         </div>
                         <div>
                             <p className="italic text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                "They exceeded our expectations... Professional, on-time, and great results."
+                                "JAJD exceeded my expectations by a mile. From the first meeting to the final day of work, they were excellent."
                             </p>
                             <div className="mt-2 flex items-center gap-2">
-                                <div className="flex text-[#FACC15]">
+                                <div className="flex text-brand-400">
                                     {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="currentColor" />)}
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sarah J. • Verified BBB Review</span>
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Richard L. • BBB Review</span>
                             </div>
                         </div>
                       </div>
@@ -297,71 +391,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                   )}
 
                   {step === 2 && (
-                    <div className="space-y-8 animate-in slide-in-from-right duration-300">
-                      <div className="space-y-3">
-                        <label htmlFor="project-type" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 block">Service Needed</label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          {[
-                            { name: 'Interior Paint', icon: Layers },
-                            { name: 'Exterior Paint', icon: Sun },
-                            { name: 'Roofing', icon: Triangle },
-                            { name: 'Siding', icon: AlignJustify },
-                            { name: 'Cabinets', icon: LayoutGrid },
-                            { name: 'Commercial', icon: Building2 }, 
-                            { name: 'Remodel', icon: PencilRuler },
-                            { name: 'Other', icon: Construction }
-                          ].map((type) => (
-                            <button
-                              key={type.name}
-                              type="button"
-                              onClick={() => setFormData({...formData, project: type.name})}
-                              className={`p-3 rounded-xl border-2 text-left transition-all flex flex-col gap-2 items-center justify-center text-center h-24 hover:shadow-sm ${
-                                formData.project === type.name 
-                                  ? 'border-[#CA8A04] bg-[#FACC15]/10 dark:bg-[#FACC15]/10 shadow-inner' 
-                                  : 'border-slate-200 dark:border-slate-700 hover:border-[#FACC15]/50 dark:hover:border-[#FACC15]/50 hover:bg-slate-50 dark:hover:bg-slate-800'
-                              }`}
-                            >
-                              <type.icon className={`w-6 h-6 ${formData.project === type.name ? 'text-[#CA8A04]' : 'text-slate-400 dark:text-slate-500'}`} />
-                              <span className={`text-[11px] font-bold leading-tight ${formData.project === type.name ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
-                                {type.name}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Project Size</label>
-                        <div className="grid grid-cols-3 gap-3">
-                          {['Small', 'Medium', 'Large'].map(size => (
-                            <button 
-                              key={size}
-                              type="button"
-                              onClick={() => setFormData({...formData, size: size})}
-                              className={`py-4 rounded-xl border-2 text-xs font-bold uppercase tracking-wider transition-all hover:shadow-sm ${formData.size === size ? 'border-[#FACC15] bg-[#FACC15] text-slate-900 shadow-md' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-[#FACC15]/50 dark:hover:border-[#FACC15]/50 bg-slate-50 dark:bg-slate-800'}`}
-                            >
-                              {size}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Estimated Budget</label>
-                        <div className="grid grid-cols-2 gap-3">
-                          {['Under $1k', '$1k - $5k', '$5k - $10k', '$10k+'].map(budget => (
-                            <button 
-                              key={budget}
-                              type="button"
-                              onClick={() => setFormData({...formData, budget: budget})}
-                              className={`py-4 rounded-xl border-2 text-xs font-bold uppercase tracking-wider transition-all hover:shadow-sm ${formData.budget === budget ? 'border-[#FACC15] bg-[#FACC15] text-slate-900 shadow-md' : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-[#FACC15]/50 dark:hover:border-[#FACC15]/50 bg-slate-50 dark:bg-slate-800'}`}
-                            >
-                              {budget}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <EstimateQuestions flow={flow} answers={answers} onChange={handleAnswer} />
                   )}
 
                   {step === 3 && (
@@ -380,7 +410,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                       <div className="space-y-2">
                         <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Project Details (Optional)</label>
                         <textarea 
-                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] min-h-[120px] text-sm resize-none text-slate-900 dark:text-white leading-relaxed"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 min-h-[120px] text-sm resize-none text-slate-900 dark:text-white leading-relaxed"
                           placeholder="Tell us a bit about your project (e.g., 'Painting 3 bedrooms and a hallway' or 'Full exterior repaint'). Big or small, we handle it all."
                           value={formData.description}
                           onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -402,12 +432,12 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                               onChange={handleFileChange}
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                            />
-                           <div className="flex items-center gap-4 p-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 group-hover:border-[#FACC15] transition-all">
-                              <div className="bg-slate-100 dark:bg-slate-700 p-3 rounded-full group-hover:bg-[#FACC15] group-hover:text-slate-900 transition-colors">
+                           <div className="flex items-center gap-4 p-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 group-hover:border-brand-400 transition-all">
+                              <div className="bg-slate-100 dark:bg-slate-700 p-3 rounded-full group-hover:bg-brand-400 group-hover:text-slate-900 transition-colors">
                                  <Camera className="w-6 h-6 text-slate-400 dark:text-slate-400 group-hover:text-slate-900" />
                               </div>
                               <div>
-                                 <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#CA8A04] transition-colors">Click to upload photos</p>
+                                 <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors">Click to upload photos</p>
                                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">JPG, PNG, WEBP supported</p>
                               </div>
                            </div>
@@ -443,16 +473,16 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Your Name</label>
-                          <input required className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] text-slate-900 dark:text-white font-medium" placeholder="John Doe" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                          <input required className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="John Doe" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
                         </div>
                         <div className="space-y-2">
                           <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Phone Number</label>
-                          <input required type="tel" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] text-slate-900 dark:text-white font-medium" placeholder="(402) 555-0123" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                          <input required type="tel" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="(402) 555-0123" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Email Address</label>
-                        <input required type="email" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-[#FACC15] dark:focus:border-[#FACC15] text-slate-900 dark:text-white font-medium" placeholder="john@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                        <input required type="email" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="john@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
                       </div>
                     </div>
                   )}
@@ -475,7 +505,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
                     type="submit" 
                     form="quote-form" // Link to form
                     disabled={loading}
-                    className="flex-[2] bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-[#FACC15] hover:text-slate-900 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs shadow-lg"
+                    className="flex-[2] bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-xl font-bold uppercase tracking-wider hover:bg-brand-400 hover:text-slate-900 transition-all flex items-center justify-center gap-2 disabled:opacity-50 text-xs shadow-lg"
                     >
                     {loading ? (
                         <>
@@ -513,7 +543,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip }) 
             </p>
             <button 
               onClick={onClose}
-              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-10 py-5 rounded-xl font-bold uppercase tracking-wider hover:bg-[#FACC15] hover:text-slate-900 transition-all shadow-xl mt-8"
+              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-10 py-5 rounded-xl font-bold uppercase tracking-wider hover:bg-brand-400 hover:text-slate-900 transition-all shadow-xl mt-8"
             >
               Done
             </button>

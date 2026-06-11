@@ -21,6 +21,8 @@ export interface Testimonial {
   content: string;
   rating: number;
   platform?: 'google' | 'thumbtack' | 'bbb';
+  /** Language the review is written in. Spanish reviews render with an "en español" tag. */
+  lang?: 'en' | 'es';
 }
 
 export interface BlogPost {
@@ -29,6 +31,22 @@ export interface BlogPost {
   category: string;
   image: string;
   readTime: string;
+}
+
+/** A journal/blog article — shared with the static-page generator (blog/posts.mjs). */
+export interface JournalPost {
+  slug: string;
+  title: string;
+  description: string;
+  keywords: string[];
+  category: string;
+  date: string;
+  updated?: string;
+  readMins: number;
+  image: string;
+  imageAlt: string;
+  excerpt: string;
+  blocks: unknown[];
 }
 
 export interface ProjectImage {
@@ -70,4 +88,63 @@ export interface Service {
   image_url: string;
   display_order: number;
   created_at?: string;
+}
+
+/** The project values the quote form understands (step 2 "Service Needed"). */
+export type QuoteProjectType =
+  | 'Interior Paint'
+  | 'Exterior Paint'
+  | 'Siding'
+  | 'Roofing'
+  | 'Cabinets'
+  | 'Commercial'
+  | 'Remodel'
+  | 'Other';
+
+export type PopularProjectCategory =
+  | 'painting'
+  | 'exterior'
+  | 'roofing'
+  | 'cabinets'
+  | 'outdoor'
+  | 'commercial';
+
+export type EstimateQuestionType = 'single' | 'multi' | 'number' | 'text';
+
+/** Maps an answer onto a structured lead field instead of just the notes blob. */
+export type EstimateQuestionRole = 'service' | 'size' | 'budget';
+
+export interface EstimateQuestion {
+  id: string;
+  label: string;
+  type: EstimateQuestionType;
+  options?: string[];
+  required?: boolean;
+  placeholder?: string;
+  hint?: string;
+  role?: EstimateQuestionRole;
+}
+
+/** A project-specific set of estimate questions (Angi/Thumbtack-style). */
+export interface EstimateFlow {
+  /** Falls back into the lead's `project` field. */
+  service: QuoteProjectType | string;
+  headline: string;
+  blurb: string;
+  questions: EstimateQuestion[];
+}
+
+/** A specific, bookable project shown in the "Popular projects" browser. */
+export interface PopularProject {
+  name: string;
+  category: PopularProjectCategory;
+  /** Which quote-form service this project pre-selects. */
+  quoteType: QuoteProjectType;
+  /** Human-readable typical range, e.g. "$400 – $1,200", "Free inspection". */
+  priceRange: string;
+  image: string;
+  /** Lowercase search terms for the to-do list autocomplete. */
+  keywords: string[];
+  /** Shows the "Popular" badge on the card. */
+  popular?: boolean;
 }

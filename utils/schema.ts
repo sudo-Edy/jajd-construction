@@ -22,6 +22,10 @@ export const leadSchema = z.object({
     .max(1000, "Description is too long")
     .optional()
     .transform(val => val ? val.replace(/<[^>]*>?/gm, '').trim() : ''), // Sanitize: strip HTML tags
+  preferred_date: z.string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format")
+    .optional()
+    .or(z.literal('')),
   attachments: z.array(z.string().url()).optional()
 });
 

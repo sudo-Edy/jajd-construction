@@ -47,7 +47,7 @@ const SortableServiceItem = ({ service, onEdit, onDelete }: { service: Service, 
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-white rounded-lg p-6 flex items-center gap-6 hover:shadow-md transition-shadow border border-slate-100 ${isDragging ? 'shadow-2xl ring-2 ring-[#FACC15]' : ''}`}
+      className={`bg-white rounded-lg p-6 flex items-center gap-6 hover:shadow-md transition-shadow border border-slate-100 ${isDragging ? 'shadow-2xl ring-2 ring-brand-400' : ''}`}
     >
       <div {...attributes} {...listeners} className="cursor-grab hover:text-slate-900 text-slate-400 p-2">
         <GripVertical className="w-6 h-6" />
@@ -263,7 +263,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
         </div>
         <button
           onClick={() => openEditModal(null)}
-          className="flex items-center gap-2 px-6 py-3 bg-[#FACC15] text-slate-900 rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-slate-900 hover:text-white transition-all shadow-lg"
+          className="flex items-center gap-2 px-6 py-3 bg-brand-400 text-slate-900 rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-slate-900 hover:text-white transition-all shadow-lg"
         >
           <Plus className="w-4 h-4" />
           Add Service
@@ -272,7 +272,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 text-[#FACC15] animate-spin" />
+          <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -320,7 +320,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
                   type="text"
                   value={editingService.title}
                   onChange={e => setEditingService({ ...editingService, title: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#FACC15] focus:ring-0 transition-colors bg-slate-50"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-400 focus:ring-0 transition-colors bg-slate-50"
                   placeholder="e.g. Interior Painting"
                 />
               </div>
@@ -330,7 +330,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
                 <textarea
                   value={editingService.description}
                   onChange={e => setEditingService({ ...editingService, description: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#FACC15] focus:ring-0 transition-colors bg-slate-50 h-32 resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-brand-400 focus:ring-0 transition-colors bg-slate-50 h-32 resize-none"
                   placeholder="Describe the service..."
                 />
               </div>
@@ -342,7 +342,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
                     type="button"
                     onClick={() => imageInputRef.current?.click()}
                     disabled={imageUploading}
-                    className="flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-[#FACC15] hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-3 bg-slate-900 text-white rounded-lg font-bold uppercase tracking-wider text-xs hover:bg-brand-400 hover:text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     <Upload className="w-4 h-4" />
                     {imageUploading ? 'Uploading...' : 'Upload Image'}
@@ -384,7 +384,7 @@ const ServicesManager: React.FC<ServicesManagerProps> = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full py-4 bg-[#FACC15] text-slate-900 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-slate-900 hover:text-white transition-all shadow-lg flex items-center justify-center gap-2"
+                className="w-full py-4 bg-brand-400 text-slate-900 rounded-xl font-black uppercase tracking-widest text-sm hover:bg-slate-900 hover:text-white transition-all shadow-lg flex items-center justify-center gap-2"
               >
                 {saving ? (
                   <>

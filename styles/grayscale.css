@@ -24,8 +24,23 @@
   background-color: #1e293b !important;
 }
 
-.dark section.bg-slate-50 {
+.dark section.bg-slate-50,
+.dark section.bg-stone-50 {
   background-color: #0f172a !important;
+}
+
+.dark .bg-stone-50 {
+  background-color: #1e293b !important;
+}
+
+.dark .border-stone-100,
+.dark .border-stone-200 {
+  border-color: #334155 !important;
+}
+
+.dark .text-stone-500,
+.dark .text-stone-600 {
+  color: #cbd5e1 !important;
 }
 
 .dark section.bg-slate-900 {
@@ -49,16 +64,16 @@
   color: #cbd5e1; /* slate-300 for body text */
 }
 
-/* Keep yellow accent color vibrant */
-.dark .text-\[\#FACC15\],
+/* Keep the amber accent vibrant in dark mode */
+.dark [class*="text-brand"],
 .dark [class*="text-yellow"] {
-  color: #FACC15 !important; /* Keep yellow vibrant */
+  color: #cf9a26 !important;
 }
 
-.dark .bg-\[\#FACC15\],
+.dark .bg-brand-400,
 .dark [class*="bg-yellow"] {
-  background-color: #FACC15 !important; /* Keep yellow backgrounds */
-  color: #0f172a !important; /* Dark text on yellow */
+  background-color: #cf9a26 !important;
+  color: #0c1322 !important; /* Dark text on amber */
 }
 
 /* Cards and containers */
@@ -134,7 +149,7 @@
   color: #f1f5f9 !important;
 }
 
-.dark . .text-white {
+.dark .text-white {
   color: #f1f5f9 !important;
 }
 

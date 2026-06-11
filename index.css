@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Gentle section snapping: scrolling settles on whole sections instead of
+   leaving a sliver of the next one showing. "proximity" (not "mandatory")
+   keeps it from fighting the user on tall, content-heavy sections. */
+@media (min-width: 0px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+  main > section,
+  #home,
+  footer {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    scroll-margin-top: 88px;
+  }
+}
+
+@media (max-width: 768px) {
+  main > section,
+  #home,
+  footer {
+    scroll-margin-top: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: none; }
+}
+
 @layer utilities {
   .pause-on-hover:hover {
     animation-play-state: paused;
@@ -41,4 +69,43 @@
 
 .pause-on-hover:hover {
   animation-play-state: paused;
+}
+
+/* Header shutter word animation — new word rolls in from the top and
+   pushes the old one out the bottom (departure-board style). */
+@keyframes jajdRollIn {
+  0%   { transform: translateY(-115%); opacity: 0; }
+  45%  { opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes jajdRollOut {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(115%); opacity: 0; }
+}
+
+.jajd-flip-word {
+  display: inline-grid;
+  vertical-align: bottom;
+  overflow: hidden;
+  line-height: 1.25;
+  padding-bottom: 0.06em;
+}
+
+.jajd-flip-word > span {
+  grid-area: 1 / 1;
+  text-align: left;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+
+.jajd-flip-word > span.jajd-entering {
+  animation: jajdRollIn 0.95s cubic-bezier(0.22, 1, 0.32, 1) both;
+}
+.jajd-flip-word > span.jajd-leaving {
+  animation: jajdRollOut 0.95s cubic-bezier(0.22, 1, 0.32, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jajd-flip-word > span.jajd-entering,
+  .jajd-flip-word > span.jajd-leaving { animation: none; }
 }

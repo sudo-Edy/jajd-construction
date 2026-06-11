@@ -143,7 +143,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ projectId, onImageUploade
         onClick={() => fileInputRef.current?.click()}
         className={`border-4 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${
           isDragging
-            ? 'border-[#FACC15] bg-[#FACC15]/10'
+            ? 'border-brand-400 bg-brand-400/10'
             : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50'
         }`}
       >
