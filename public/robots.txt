@@ -2,17 +2,23 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-# AI crawlers welcome. See /llms.txt for a structured business summary
+# AI crawlers welcome. See /llms.txt for a structured business summary.
+# Each named group must repeat the /admin disallow — robots.txt groups do NOT
+# inherit rules from the wildcard group; a bot obeys only its most specific match.
 User-agent: GPTBot
 Allow: /
+Disallow: /admin
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin
 
 Sitemap: https://jajdconstruction.com/sitemap.xml
