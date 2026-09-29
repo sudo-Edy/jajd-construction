@@ -4,7 +4,6 @@ import { SiteSettingsProvider } from './contexts/SiteSettingsContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Process from './components/Process';
-import Sources from './components/Sources';
 import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
 import About from './components/About';
@@ -16,6 +15,7 @@ import PopularProjects from './components/PopularProjects';
 import Journal from './components/Journal';
 import BookingCalendar from './components/BookingCalendar';
 import DarkModeToggle from './components/DarkModeToggle';
+import MobileActionBar from './components/MobileActionBar';
 
 // Admin panel is code-split: it never ships in the public-page bundle.
 const AdminPanel = React.lazy(() => import('./components/admin/AdminPanel'));
@@ -64,10 +64,13 @@ function App() {
     }
   }, [isAdminRoute]);
 
-  // Exit intent: armed 10s after load, fires once per visit when the cursor
-  // leaves through the top of the viewport.
+  // Exit intent (desktop only, mouse-driven): armed 10s after load, fires at
+  // most once per browser session when the cursor leaves through the top.
   useEffect(() => {
     if (isAdminRoute) return;
+    try {
+      if (sessionStorage.getItem('jajd-exit-shown')) return;
+    } catch { /* storage blocked: fall through, still once per page */ }
     let armed = false;
     const timer = setTimeout(() => { armed = true; }, 10000);
 
@@ -75,6 +78,7 @@ function App() {
       if (armed && e.clientY <= 0) {
         setShowExitIntent(true);
         armed = false;
+        try { sessionStorage.setItem('jajd-exit-shown', '1'); } catch { /* ignore */ }
       }
     };
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -110,27 +114,26 @@ function App() {
           }
         />
 
+        {/* Mobile-first order: what we do + prices, then proof (reviews, real
+            work), then how it works and who we are, then the final ask. */}
         <PopularProjects
           onSelectProject={(p) => handleOpenQuote({ project: p.quoteType, detail: p.name, source: 'popular_project' })}
           onOpenQuote={() => handleOpenQuote({ source: 'popular_project_other' })}
         />
+        <Testimonials onOpenQuote={() => handleOpenQuote()} />
         <RecentWork />
-        <BookingCalendar onSelectDate={(date) => handleOpenQuote({ date })} onOpenQuote={() => handleOpenQuote()} />
         <Process onOpenQuote={() => handleOpenQuote()} />
-
         <About />
         <ServiceAreas />
-
-        <Testimonials onOpenQuote={() => handleOpenQuote()} />
-        <Journal />
         <FAQ onOpenQuote={() => handleOpenQuote()} />
-        <Sources />
+        <BookingCalendar onSelectDate={(date) => handleOpenQuote({ date })} onOpenQuote={() => handleOpenQuote()} />
+        <Journal />
       </main>
 
       <Footer onOpenQuote={() => handleOpenQuote()} />
 
-      {/* Persistent Floating CTA */}
-      <div className="fixed bottom-6 right-6 z-[60]">
+      {/* Floating CTA (desktop): phones get the bottom action bar instead */}
+      <div className="hidden lg:block fixed bottom-6 right-6 z-[60]">
         <button
           onClick={() => handleOpenQuote()}
           className="flex items-center gap-2.5 bg-brand-400 text-navy px-5 py-3.5 rounded-full font-bold text-sm shadow-card-hover hover:scale-105 active:scale-95 transition-all"
@@ -156,7 +159,7 @@ function App() {
                  <ShieldCheck className="w-8 h-8 text-brand-600" />
               </div>
               <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Before you go, your estimate is free.</h3>
-              <p className="text-stone-500">Tell us about your painting, siding, or roofing project. It takes under a minute, with no obligation, and we respond within 24 hours.</p>
+              <p className="text-stone-500">Takes under a minute. No obligation, and we reply within 24 hours.</p>
               <button
                 onClick={() => { setHasShownExitIntent(true); handleOpenQuote(); }}
                 className="w-full bg-navy text-white py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all flex items-center justify-center gap-2"
@@ -185,6 +188,7 @@ function App() {
         initialDetail={activeDetail}
       />
 
+      <MobileActionBar onOpenQuote={() => handleOpenQuote({ source: 'mobile_bar' })} />
       <DarkModeToggle />
     </div>
     </SiteSettingsProvider>

@@ -18,22 +18,23 @@ export const PROCESS_STEPS: ProcessStep[] = [
   {
     icon: <ClipboardCheck />,
     title: "Request a Free Estimate",
-    description: "Tell us about your project in under a minute, whether it's painting, siding, roofing, or anything in between."
+    description: "Call, text, or fill out the form. It takes about a minute."
   },
   {
     icon: <UserCheck />,
     title: "We Visit Your Home",
-    description: "We come out, look at the job in person, and answer your questions. No pressure and no upselling."
+    description: "We look at the job in person and answer your questions. No pressure, no upselling."
   },
   {
     icon: <Construction />,
     title: "Clear, Honest Quote",
-    description: "You get a written scope of work with transparent pricing and a realistic timeline. The price we quote is the price you pay."
+    description: "A written price and timeline. The price we quote is the price you pay."
   },
   {
     icon: <Hammer />,
     title: "We Do the Work",
-    description: "Our crew shows up on time, protects your property, keeps you updated, and cleans up when we're done."
+    description: "On time, your home protected, and a clean site when we leave."
+
   }
 ];
 

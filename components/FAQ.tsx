@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, Phone } from 'lucide-react';
+import { CONFIG } from '../config';
+import { analytics } from '../utils/analytics';
+
 
 interface FAQProps {
   onOpenQuote: () => void;
@@ -9,37 +12,42 @@ const FAQS = [
   {
     question: 'What services does JAJD Construction offer?',
     answer:
-      'Painting is our core trade: interior, exterior, and cabinet refinishing. We also handle siding installation and repair, roofing (inspections, repairs, and full replacements), deck staining, pressure washing, and commercial painting and build-outs across Nebraska.',
+      'Painting is our core trade: interior, exterior, and cabinets. We also do siding, roofing, deck staining, pressure washing, and commercial work across Nebraska.',
+  },
+  {
+    question: 'How much will my project cost?',
+    answer:
+      'See the typical price ranges in our Services section. Every home is different, so your free written estimate is the final number.',
   },
   {
     question: 'Are you just painters, or a full general contractor?',
     answer:
-      'Both. Painting is what we do most, and as a licensed and insured general contractor we can take on the whole project: siding, roofing, remodels, and everything that connects them. One crew, one point of contact, one written quote.',
+      'Both. We are a licensed, insured general contractor, so one crew and one written quote can cover paint, siding, roofing, and remodels.',
   },
   {
     question: 'What areas do you serve?',
     answer:
-      'We are based in Omaha and serve homeowners and businesses across all of Nebraska, including Lincoln, Bellevue, Papillion, Elkhorn, Gretna, La Vista, Fremont, and surrounding communities.',
+      'We are based in Omaha and serve all of Nebraska, including Lincoln, Bellevue, Papillion, Elkhorn, Gretna, La Vista, and Fremont.',
   },
   {
     question: 'Are you licensed and insured?',
     answer:
-      'Yes. JAJD Construction carries full general liability and workers’ compensation insurance on every job site, and we have been BBB A+ accredited since 2014.',
+      'Yes. Full liability and workers’ comp coverage on every job, and BBB A+ accredited since 2014.',
   },
   {
     question: 'Is the estimate really free?',
     answer:
-      'Estimates are completely free with no obligation. We visit your property, look at the job in person, and give you a written quote with transparent pricing. The price we quote is the price you pay.',
+      'Yes, free with no obligation. We look at the job in person and give you a written price. The price we quote is the price you pay.',
   },
   {
     question: 'How do I schedule my project?',
     answer:
-      'Use the schedule section on this page to pick a preferred start date, or click any "Free Estimate" button and tell us about your project. We respond within 24 hours to confirm your consultation.',
+      'Call, text, or tap any Free Estimate button. You can also pick a preferred start date in the schedule section. We reply within 24 hours.',
   },
   {
     question: 'Do you handle small jobs, or only large projects?',
     answer:
-      'Both. We built our reputation on small jobs done well: a single-room repaint, a siding repair, a roof patch. No project is too small, and larger remodels and commercial work get the same care.',
+      'Yes, we do small jobs: a single room, a siding repair, a roof patch. No job is too small.',
   },
 ];
 
@@ -50,18 +58,16 @@ const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
   // Keep these questions in sync with that block if you edit them here.
 
   return (
-    <section id="faq" className="py-24 bg-white border-b border-stone-100">
+    <section id="faq" className="py-14 md:py-24 bg-white border-b border-stone-100">
       <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center space-y-4 mb-12">
+        <div className="text-center space-y-3 md:space-y-4 mb-8 md:mb-12">
           <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">
             Quick answers
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
             Frequently asked questions
           </h2>
-          <p className="text-stone-600">
-            Straight answers about painting, siding, and roofing in Nebraska.
-          </p>
+
         </div>
 
         <div className="space-y-3">
@@ -73,7 +79,7 @@ const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
                 className={`rounded-2xl border transition-colors ${isOpen ? 'border-brand-400/60 bg-brand-50/40' : 'border-stone-200 bg-stone-50'}`}
               >
                 <button
-                  className="w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left"
+                  className="w-full flex items-center justify-between gap-4 p-4 md:p-6 text-left min-h-[56px]"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   aria-expanded={isOpen}
                 >
@@ -81,7 +87,7 @@ const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
                   <ChevronDown className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180 text-brand-600' : ''}`} />
                 </button>
                 {isOpen && (
-                  <p className="px-5 md:px-6 pb-5 md:pb-6 text-stone-600 leading-relaxed -mt-1">
+                  <p className="px-4 md:px-6 pb-4 md:pb-6 text-stone-600 leading-relaxed -mt-1">
                     {item.answer}
                   </p>
                 )}
@@ -90,12 +96,19 @@ const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
           })}
         </div>
 
-        <div className="flex justify-center pt-10">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-8 md:pt-10">
+          <a
+            href={`tel:${CONFIG.PHONE_RAW}`}
+            onClick={() => analytics.phoneClick('faq')}
+            className="inline-flex items-center justify-center gap-2.5 border-2 border-stone-200 text-slate-900 px-8 py-4 rounded-xl font-bold hover:border-brand-400 transition-all"
+          >
+            <Phone className="w-4 h-4 text-brand-600" /> Ask us: {CONFIG.PHONE}
+          </a>
           <button
             onClick={onOpenQuote}
-            className="inline-flex items-center gap-3 bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all shadow-lg"
+            className="inline-flex items-center justify-center gap-3 bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all shadow-lg"
           >
-            Still have questions? Get a free estimate <ArrowRight className="w-4 h-4" />
+            Get a free estimate <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

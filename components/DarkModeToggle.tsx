@@ -8,7 +8,7 @@ const DarkModeToggle: React.FC = () => {
   return (
     <button
       onClick={toggleDarkMode}
-      className="fixed bottom-24 right-8 z-[60] group"
+      className="hidden lg:block fixed bottom-24 right-8 z-[60] group"
       title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       aria-label={isDarkMode ? 'Enable light mode' : 'Enable dark mode'}
     >

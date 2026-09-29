@@ -10,17 +10,17 @@ const PILLARS = [
   {
     icon: Award,
     title: 'BBB A+ Accredited',
-    text: 'Accredited since 2014 and committed to the Better Business Bureau Standards for Trust.',
+    text: 'Accredited since 2014. Our record is public.',
   },
   {
     icon: ShieldCheck,
     title: 'Licensed & Insured',
-    text: 'Full general liability and workers’ compensation coverage on every single job site.',
+    text: 'Liability and workers’ comp on every job.',
   },
   {
     icon: Heart,
     title: 'Family-Owned & Local',
-    text: 'We live here too. Your neighbors are our references, and our reputation is everything.',
+    text: 'When you call, you talk to the people doing the work.',
   },
 ];
 
@@ -29,11 +29,11 @@ const About: React.FC = () => {
   const aboutImage = get(SETTING_KEYS.ABOUT_IMAGE, DEFAULT_ABOUT_IMAGE);
 
   return (
-    <section id="about" className="py-24 bg-white relative overflow-hidden border-b border-stone-100">
+    <section id="about" className="py-14 md:py-24 bg-white relative overflow-hidden border-b border-stone-100">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
           {/* Image side */}
-          <div className="relative">
+          <div className="relative order-2 lg:order-1 mx-2 lg:mx-0">
             <div className="absolute -inset-3 bg-brand-400/20 rounded-3xl -rotate-2" />
             <img
               src={aboutImage}
@@ -41,40 +41,37 @@ const About: React.FC = () => {
               alt="A JAJD Construction painter carefully finishing an interior wall"
               loading="lazy"
             />
-            <div className="absolute -bottom-6 -right-4 md:-right-6 bg-navy text-white px-7 py-5 rounded-2xl shadow-2xl z-20 border border-slate-800">
+            <div className="absolute -bottom-5 -right-2 md:-right-6 bg-navy text-white px-5 py-4 md:px-7 md:py-5 rounded-2xl shadow-2xl z-20 border border-slate-800">
               <p className="text-3xl md:text-4xl font-extrabold text-brand-400">10+</p>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] opacity-80 mt-1">Years serving Nebraska</p>
             </div>
           </div>
 
           {/* Text side */}
-          <div className="space-y-9">
-            <div className="space-y-5">
+          <div className="space-y-6 md:space-y-9 order-1 lg:order-2">
+            <div className="space-y-4 md:space-y-5">
               <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">About JAJD</span>
               <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
                 The contractor your neighbors already trust.
               </h2>
               <p className="text-stone-600 text-base md:text-lg leading-relaxed">
-                JAJD Construction is a family-owned contractor based in Omaha. We built this
-                company on small jobs done well — a bedroom repaint, a siding repair, a roof
-                that just needed honest attention.
-              </p>
-              <p className="text-stone-600 text-base md:text-lg leading-relaxed">
-                Ten years later, that's still how we work: show up on time, protect your home
-                like it's ours, and leave the site cleaner than we found it. Across Nebraska,
-                homeowners call us back because every project — big or small — gets treated
-                like it matters. Because it does.
+                A family-owned Omaha crew, built on small jobs done well. Ten years later we
+                still show up on time, treat your home like ours, and leave it cleaner than
+                we found it.
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
               {PILLARS.map(({ icon: Icon, title, text }) => (
-                <div key={title} className="space-y-3 p-5 bg-stone-50 border border-stone-100 rounded-2xl hover:border-brand-400/50 hover:bg-brand-50/50 transition-colors">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-stone-200 shadow-sm">
+                <div key={title} className="flex sm:block items-center gap-3.5 sm:space-y-3 p-4 md:p-5 bg-stone-50 border border-stone-100 rounded-2xl hover:border-brand-400/50 hover:bg-brand-50/50 transition-colors">
+                  <div className="shrink-0 w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-stone-200 shadow-sm">
                     <Icon className="w-5 h-5 text-brand-600" />
                   </div>
-                  <h3 className="font-bold text-slate-900 text-sm leading-snug">{title}</h3>
-                  <p className="text-stone-500 text-xs leading-relaxed">{text}</p>
+                  <div className="space-y-0.5 sm:space-y-3">
+                    <h3 className="font-bold text-slate-900 text-sm leading-snug">{title}</h3>
+                    <p className="text-stone-500 text-xs leading-relaxed">{text}</p>
+                  </div>
+
                 </div>
               ))}
             </div>

@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, HardHat, Phone, ChevronRight, MessageSquare } from 'lucide-react';
+import { Menu, X, HardHat, Phone, ChevronRight, MessageSquare, Moon, Sun } from 'lucide-react';
 import { CONFIG, SMS_LINK } from '../config';
 import { analytics } from '../utils/analytics';
 import FlipWord from './FlipWord';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface HeaderProps {
   onOpenQuote: () => void;
 }
 
+// Same order as the page, top to bottom.
 const NAV_LINKS = [
   { name: 'Home', href: '#' },
-  { name: 'Projects', href: '#projects' },
-  { name: 'Our Work', href: '#portfolio' },
-  { name: 'Schedule', href: '#schedule' },
-  { name: 'About', href: '#about' },
+  { name: 'Services', href: '#projects' },
   { name: 'Reviews', href: '#reviews' },
+  { name: 'Our Work', href: '#portfolio' },
+  { name: 'About', href: '#about' },
+  { name: 'FAQ', href: '#faq' },
+  { name: 'Schedule', href: '#schedule' },
   { name: 'Tips', href: '/blog/' },
   { name: 'Contact', href: '#contact' },
 ];
@@ -23,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,30 +91,30 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
       }`}
       aria-label="Main navigation"
     >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center gap-2">
         {/* Brand */}
         <a
           href="#"
-          className="flex items-center gap-2.5 cursor-pointer select-none"
+          className="flex items-center gap-2 sm:gap-2.5 cursor-pointer select-none min-w-0"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           aria-label="JAJD Construction, back to top"
         >
           <div className="bg-brand-400 p-1.5 rounded-lg">
             <HardHat className="w-5 h-5 text-navy" aria-hidden="true" />
           </div>
-          <span className="text-lg font-extrabold tracking-tight text-white flex items-baseline">
-            JAJD&nbsp;<FlipWord className="text-brand-400" />
+          <span className="text-base sm:text-lg font-extrabold tracking-tight text-white flex items-baseline">
+            JAJD<span className="max-[359px]:hidden flex items-baseline">&nbsp;<FlipWord className="text-brand-400" /></span>
           </span>
         </a>
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center">
-          <ul className="flex items-center gap-7 mr-8">
+          <ul className="flex items-center gap-5 xl:gap-7 mr-6 xl:mr-8 whitespace-nowrap">
             {NAV_LINKS.map((item) => {
               const itemID = item.href.replace('#', '') || 'home';
               const isActive = activeSection === itemID;
               return (
-                <li key={item.name}>
+                <li key={item.name} className={item.href === '#' ? 'hidden xl:block' : ''}>
                   <a
                     href={item.href}
                     onClick={(e) => handleScrollTo(e, item.href)}
@@ -129,29 +133,41 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
           <a
             href={`tel:${CONFIG.PHONE_RAW}`}
             onClick={() => analytics.phoneClick('header')}
-            className="flex items-center gap-2 border border-white/15 rounded-lg px-4 py-2 mr-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+            className="flex items-center gap-2 border border-white/15 rounded-lg px-4 py-2 mr-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors whitespace-nowrap"
           >
             <Phone className="w-4 h-4 text-brand-400" aria-hidden="true" />
-            {CONFIG.PHONE}
+            <span className="hidden xl:inline">{CONFIG.PHONE}</span>
+            <span className="xl:hidden sr-only">Call {CONFIG.PHONE}</span>
           </a>
 
           <button
             onClick={onOpenQuote}
-            className="bg-brand-400 text-navy px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-white transition-all shadow-md active:scale-95"
+            className="bg-brand-400 text-navy px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-white transition-all shadow-md active:scale-95 whitespace-nowrap"
           >
             Free Estimate
           </button>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="lg:hidden text-white p-2 hover:bg-white/10 rounded-md transition-colors focus:outline-none"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-expanded={isMenuOpen}
-          aria-label="Toggle navigation menu"
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile: one-tap call + menu toggle */}
+        <div className="lg:hidden flex items-center gap-1 shrink-0">
+
+          <a
+            href={`tel:${CONFIG.PHONE_RAW}`}
+            onClick={() => analytics.phoneClick('header_mobile')}
+            aria-label={`Call ${CONFIG.PHONE}`}
+            className="flex items-center gap-1.5 bg-brand-400 text-navy rounded-lg px-3 min-h-[44px] font-bold text-sm active:scale-95 transition-transform"
+          >
+            <Phone className="w-4 h-4" aria-hidden="true" /> Call
+          </a>
+          <button
+            className="text-white w-11 h-11 flex items-center justify-center hover:bg-white/10 rounded-md transition-colors focus:outline-none"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle navigation menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -204,6 +220,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
                </a>
                <p className="text-[11px] text-white/40 font-medium">Call or text, Mon-Fri, 8am-6pm in Omaha, NE</p>
             </div>
+
+            <button
+              onClick={toggleDarkMode}
+              className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold text-white/50 hover:text-white transition-colors"
+            >
+              {isDarkMode ? <Sun size={14} /> : <Moon size={14} />}
+              {isDarkMode ? 'Light mode' : 'Dark mode'}
+            </button>
           </div>
         </div>
       )}

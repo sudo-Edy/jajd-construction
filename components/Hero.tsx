@@ -3,7 +3,7 @@ import { Star, ShieldCheck, ArrowRight, MapPin, Award, ThumbsUp, Search, Hammer,
 import { useSiteSettings } from '../contexts/SiteSettingsContext';
 import { SETTING_KEYS } from '../utils/siteSettings';
 import { SMS_LINK } from '../config';
-import { POPULAR_PROJECTS } from '../constants';
+import { POPULAR_PROJECTS, TESTIMONIALS } from '../constants';
 import { PopularProject } from '../types';
 import { analytics } from '../utils/analytics';
 
@@ -27,6 +27,9 @@ const matchProjects = (query: string): PopularProject[] => {
     .sort((a, b) => Number(b.popular ?? false) - Number(a.popular ?? false))
     .slice(0, 6);
 };
+
+// Average of the real reviews on file (same figure the Reviews section shows).
+const AVG_RATING = (TESTIMONIALS.reduce((sum, t) => sum + t.rating, 0) / TESTIMONIALS.length).toFixed(1);
 
 const TRUST_CHIPS = [
   { icon: Award, label: 'BBB A+ Accredited', sub: 'Since 2014' },
@@ -52,7 +55,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
   };
 
   return (
-    <section id="home" className="relative min-h-[92vh] flex items-center pt-28 pb-16 overflow-hidden">
+    <section id="home" className="relative lg:min-h-[92vh] flex items-center pt-24 pb-12 md:pt-28 md:pb-16 overflow-hidden">
       {/* Background: a real neighborhood home. Admin can swap this to any project photo */}
       <div className="absolute inset-0 z-0">
         <img
@@ -67,30 +70,43 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-navy/70 to-transparent" />
       </div>
 
-      <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-12 lg:gap-16 items-center">
+      <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-16 items-center">
         {/* Left text content */}
-        <div className="text-white space-y-7 animate-fade-up">
+        <div className="text-white space-y-5 md:space-y-7 animate-fade-up">
           <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15">
             <MapPin className="w-3.5 h-3.5 text-brand-400" />
-            <span className="text-xs font-semibold tracking-wide text-white">Family-owned in Omaha, serving all of Nebraska</span>
+            <span className="text-xs font-semibold tracking-wide text-white">Family-owned in Omaha, NE</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08]">
-            Your neighborhood
+          <h1 className="text-[2.1rem] sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.08]">
+            <span className="text-brand-400">Painting, siding &amp; roofing</span>
             <br />
-            <span className="text-brand-400">painting, siding &amp; roofing</span>
-            <br />
-            contractor.
+            done right in Omaha.
           </h1>
 
           <p className="text-base md:text-xl text-white/85 max-w-xl leading-relaxed">
-            Honest, careful work on the home you live in — from a single-room repaint
-            to a full roof replacement. We show up on time, keep the site clean, and
-            stand behind every job.
+            Free written estimates. We show up on time, keep it clean, and stand
+            behind every job.
           </p>
 
-          {/* Trust chips */}
-          <div className="flex flex-wrap gap-3 pt-1">
+          {/* Mobile: one compact proof line instead of stacked chips */}
+          <div className="sm:hidden flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
+            <span className="flex items-center gap-1.5 font-bold">
+              <span className="flex text-brand-400" aria-hidden="true">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+              </span>
+              {AVG_RATING} on Google &amp; BBB
+            </span>
+            <span className="flex items-center gap-1.5 text-white/75">
+              <Award size={15} className="text-brand-400" /> BBB A+
+            </span>
+            <span className="flex items-center gap-1.5 text-white/75">
+              <ShieldCheck size={15} className="text-brand-400" /> Licensed &amp; insured
+            </span>
+          </div>
+
+          {/* Trust chips (tablet/desktop) */}
+          <div className="hidden sm:flex flex-wrap gap-3 pt-1">
             {TRUST_CHIPS.map(({ icon: Icon, label, sub }) => (
               <div key={label} className="flex items-center gap-3 bg-white/[0.07] px-4 py-2.5 rounded-xl border border-white/10 backdrop-blur-sm">
                  <Icon className="w-5 h-5 text-brand-400 shrink-0" />
@@ -102,22 +118,22 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
             ))}
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pt-1 text-sm text-white/70">
+          <div className="hidden sm:flex flex-row items-center gap-4 pt-1 text-sm text-white/70">
             <span className="flex items-center gap-1.5"><ShieldCheck size={16} className="text-brand-400 shrink-0" /> Licensed &amp; insured general contractor</span>
             <span className="hidden sm:block w-1 h-1 rounded-full bg-white/30" />
-            <span className="flex items-center gap-1.5"><ShieldCheck size={16} className="text-brand-400 shrink-0 sm:hidden" /> Free, no-obligation estimates</span>
+            <span className="flex items-center gap-1.5">Free, no-obligation estimates</span>
           </div>
         </div>
 
         {/* Right estimate card */}
         <div className="lg:justify-self-end w-full max-w-md animate-fade-up" style={{ animationDelay: '150ms' }}>
-          <div className="bg-white dark:bg-slate-900 p-7 md:p-8 rounded-2xl shadow-card-hover relative overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/10">
+          <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-card-hover relative overflow-hidden ring-1 ring-slate-900/5 dark:ring-white/10">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             <div className="relative z-10 space-y-5">
               <div>
                 <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Get your free estimate</h2>
-                <p className="text-stone-500 dark:text-slate-400 text-sm mt-1.5">Tell us where the project is and we'll take it from there. No obligation, ever.</p>
+                <p className="text-stone-500 dark:text-slate-400 text-sm mt-1.5">About a minute. No obligation.</p>
               </div>
 
               <div className="space-y-4">
@@ -128,8 +144,8 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                         id="hero-todo"
                         type="text"
                         autoComplete="off"
-                        placeholder={'Try "paint my living room" or "roof leak"'}
-                        className="w-full bg-stone-50 dark:bg-slate-800 border-2 border-stone-200 dark:border-slate-700 rounded-xl pl-11 pr-4 py-3.5 font-semibold text-sm focus:outline-none focus:border-brand-400 transition-all text-slate-900 dark:text-white placeholder-slate-400"
+                        placeholder={'e.g. "paint living room", "roof leak"'}
+                        className="w-full bg-stone-50 dark:bg-slate-800 border-2 border-stone-200 dark:border-slate-700 rounded-xl pl-11 pr-4 py-3.5 font-semibold text-base md:text-sm focus:outline-none focus:border-brand-400 transition-all text-slate-900 dark:text-white placeholder-slate-400"
                         value={todo}
                         onChange={(e) => setTodo(e.target.value)}
                         onFocus={() => setSearchFocused(true)}
@@ -187,6 +203,7 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                       id="hero-zip"
                       type="text"
                       inputMode="numeric"
+                      autoComplete="postal-code"
                       maxLength={5}
                       placeholder="e.g. 68102"
                       className="w-full bg-stone-50 dark:bg-slate-800 border-2 border-stone-200 dark:border-slate-700 rounded-xl px-4 py-3.5 font-bold text-lg focus:outline-none focus:border-brand-400 transition-all text-slate-900 dark:text-white placeholder-slate-300"
@@ -209,13 +226,13 @@ const Hero: React.FC<HeroProps> = ({ onOpenQuote }) => {
                   className="flex items-center justify-center gap-2 text-sm font-semibold text-stone-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors py-1"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  Prefer texting? Text us a photo of your project
+                  Prefer texting? Send us a photo
                 </a>
 
                 <div className="flex items-start gap-2.5 pt-1">
                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                    <p className="text-xs text-stone-500 dark:text-slate-300 leading-relaxed">
-                     We respond within 24 hours and never share your information with third parties.
+                     Reply within 24 hours. We never share your info.
                    </p>
                 </div>
               </div>

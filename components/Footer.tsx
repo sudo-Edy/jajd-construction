@@ -16,11 +16,11 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
   ].filter(s => s.href && s.href !== '#');
 
   return (
-    <footer id="contact" className="bg-navy pt-20 pb-10 text-white border-t border-white/5">
+    <footer id="contact" className="bg-navy pt-14 md:pt-20 pb-28 lg:pb-10 text-white border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 md:gap-12 mb-12 md:mb-16">
           {/* Brand column */}
-          <div className="space-y-6">
+          <div className="col-span-2 lg:col-span-1 space-y-5 md:space-y-6">
             <div className="flex items-center gap-2.5">
               <div className="bg-brand-400 p-1.5 rounded-lg">
                 <HardHat className="w-5 h-5 text-navy" />
@@ -30,9 +30,8 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
               </span>
             </div>
             <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-              Family-owned painting, siding, and roofing contractor based in Omaha.
-              A licensed general contractor proudly serving homeowners and businesses
-              across Nebraska.
+              Family-owned painting, siding, and roofing contractor in Omaha, serving
+              all of Nebraska.
             </p>
             <div className="flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-[11px] font-semibold text-white/80">
@@ -54,7 +53,7 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
           </div>
 
           {/* Services (SEO-friendly internal anchors) */}
-          <div>
+          <div className="order-3 lg:order-none">
             <h4 className="font-bold mb-6 text-xs uppercase tracking-wider text-white/90">Services</h4>
             <ul className="space-y-3 text-sm text-white/60">
               <li><a href="#projects" className="hover:text-brand-400 transition-colors">Interior &amp; Exterior Painting</a></li>
@@ -67,7 +66,7 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
           </div>
 
           {/* Quick links */}
-          <div>
+          <div className="order-4 lg:order-none">
             <h4 className="font-bold mb-6 text-xs uppercase tracking-wider text-white/90">Company</h4>
             <ul className="space-y-3 text-sm text-white/60">
               <li><button onClick={onOpenQuote} className="hover:text-brand-400 transition-colors">Request an Estimate</button></li>
@@ -80,8 +79,9 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
             </ul>
           </div>
 
-          {/* Contact: consistent NAP for local SEO */}
-          <div className="space-y-6">
+          {/* Contact: consistent NAP for local SEO. On phones it sits right under the brand. */}
+          <div className="col-span-2 lg:col-span-1 order-2 lg:order-none space-y-6">
+
             <h4 className="font-bold text-xs uppercase tracking-wider text-white/90">Get in Touch</h4>
             <ul className="space-y-5">
               <li className="flex gap-3.5 items-start">

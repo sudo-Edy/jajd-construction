@@ -48,6 +48,9 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
+    // Phones get a swipeable list instead; skip the animation for reduced motion too.
+    if (!window.matchMedia('(min-width: 768px)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const speed = 32; // px/sec
     let rafId = 0;
@@ -88,13 +91,13 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
   return (
     <section
       id="reviews"
-      className="py-24 bg-stone-50 overflow-hidden border-b border-stone-200 relative"
+      className="py-14 md:py-24 bg-stone-50 overflow-hidden border-b border-stone-200 relative"
     >
-      <div className="max-w-7xl mx-auto px-6 mb-12 text-center space-y-5">
-        <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">Client testimony</span>
-        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">What your neighbors say about us</h2>
-        <p className="text-stone-600 max-w-xl mx-auto text-lg">
-          Real reviews from Nebraska homeowners, pulled straight from Google and the BBB.
+      <div className="max-w-7xl mx-auto px-6 mb-8 md:mb-12 text-center space-y-4 md:space-y-5">
+        <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">Reviews</span>
+        <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">What your neighbors say</h2>
+        <p className="text-stone-600 max-w-xl mx-auto text-base md:text-lg">
+          Real reviews from Google and the BBB.
         </p>
 
         {/* Rating summary */}
@@ -123,8 +126,24 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
         </div>
       </div>
 
-      {/* Marquee */}
-      <div className="relative w-full overflow-hidden py-8 select-none">
+      {/* Phones: swipeable row, full text, no auto-motion */}
+      <div className="md:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory px-6 pb-4 scroll-px-6" aria-label="Customer reviews, swipe for more">
+        {TESTIMONIALS.map((review) => (
+          <figure key={review.id} className="snap-start shrink-0 w-[85%] bg-white p-5 rounded-2xl shadow-card border border-stone-200 flex flex-col">
+            <div className="flex gap-0.5 text-brand-400 mb-3" aria-label={`${review.rating} out of 5 stars`}>
+              {[...Array(review.rating)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
+            </div>
+            <blockquote className="text-[15px] text-slate-700 leading-relaxed flex-1">"{review.content}"</blockquote>
+            <figcaption className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between gap-2 text-xs">
+              <span className="font-bold text-slate-900">{review.name} <span className="font-medium text-slate-400">· {review.role}</span></span>
+              <span className="text-slate-400 font-semibold shrink-0">{PLATFORM_NAMES[review.platform ?? ''] ?? 'Review'}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+
+      {/* Marquee (tablet/desktop) */}
+      <div className="hidden md:block relative w-full overflow-hidden py-8 select-none">
         <div className="absolute inset-y-0 left-0 w-24 md:w-32 bg-gradient-to-r from-stone-50 to-transparent z-10 pointer-events-none" />
         <div className="absolute inset-y-0 right-0 w-24 md:w-32 bg-gradient-to-l from-stone-50 to-transparent z-10 pointer-events-none" />
 
@@ -178,12 +197,13 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-6">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 md:pt-6 px-6">
         <button
           onClick={onOpenQuote}
           className="inline-flex items-center gap-3 bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all shadow-lg group active:scale-95"
         >
-          Join Our Happy Customers <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          Get My Free Estimate <ArrowRight
+ className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
         {CONFIG.GOOGLE_REVIEW_URL && CONFIG.GOOGLE_REVIEW_URL !== '#' && (
           <a

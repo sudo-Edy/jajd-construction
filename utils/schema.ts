@@ -12,12 +12,15 @@ export const leadSchema = z.object({
     .min(2, "Name is too short")
     .max(100, "Name is too long")
     .transform(val => val.trim()), // Sanitize: trim whitespace
+  // Optional: we reach people by phone/text first. Empty or a valid address.
   email: z.string()
-    .email("Invalid email address")
-    .transform(val => val.toLowerCase().trim()), // Sanitize: normalize
+    .trim()
+    .toLowerCase()
+    .refine(val => val === '' || z.string().email().safeParse(val).success, "Please check your email address"),
   phone: z.string()
-    .min(10, "Phone number required")
-    .transform(val => val.replace(/\D/g, '')), // Sanitize: only numbers
+    .transform(val => val.replace(/\D/g, '')) // Sanitize: only numbers
+    .refine(val => val.length === 10 || (val.length === 11 && val.startsWith('1')), "Please enter a 10-digit phone number"),
+
   description: z.string()
     .max(1000, "Description is too long")
     .optional()

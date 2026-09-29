@@ -50,14 +50,18 @@ const RecentWork = () => {
     setTimeout(() => setSelectedProject(null), 300); // Wait for animation
   };
 
+  // A broken or empty gallery tells visitors nothing, so the section simply
+  // steps aside (the error is still logged for us).
+  if (!loading && (error || projects.length === 0)) return null;
+
   return (
-    <section id="portfolio" className="py-24 bg-white border-b border-stone-200">
+    <section id="portfolio" className="py-14 md:py-24 bg-white border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="max-w-2xl mb-12 space-y-4">
-           <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">Our portfolio</span>
-           <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Recent work around the neighborhood</h2>
-           <p className="text-stone-600 text-lg">
-             Real projects from real Nebraska homes. Click any project to see the full photo gallery.
+        <div className="max-w-2xl mb-8 md:mb-12 space-y-3 md:space-y-4">
+           <span className="text-brand-600 font-bold text-xs uppercase tracking-[0.2em]">Our work</span>
+           <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">Recent local projects</h2>
+           <p className="text-stone-600 text-base md:text-lg">
+             Real Nebraska homes. Tap a project for photos.
            </p>
         </div>
 
@@ -68,22 +72,10 @@ const RecentWork = () => {
           </div>
         )}
 
-        {/* Error state */}
-        {error && !loading && (
-          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-8 text-center">
-            <p className="text-red-800 font-bold">{error}</p>
-            <button 
-              onClick={fetchProjects}
-              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-md font-bold hover:bg-red-700 transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        )}
 
         {/* Projects grid */}
-        {!loading && !error && (
-          <div className="grid md:grid-cols-3 gap-8">
+        {!loading && (
+          <div className="grid md:grid-cols-3 gap-5 md:gap-8">
              {projects.map((project) => {
                const imageCount = project.images?.length || 0;
                
@@ -103,7 +95,7 @@ const RecentWork = () => {
                     />
 
                     {/* Main Card Content */}
-                    <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-card group-hover:shadow-card-hover transition-all duration-500 bg-navy border border-stone-200/50">
+                    <div className="relative rounded-2xl overflow-hidden aspect-[4/3] md:aspect-[4/5] shadow-card group-hover:shadow-card-hover transition-all duration-500 bg-navy border border-stone-200/50">
                         <img
                           src={project.thumbnail_url}
                           alt={`${project.title} in ${project.location}, a JAJD Construction project`}
@@ -119,7 +111,7 @@ const RecentWork = () => {
                           </div>
                         )}
                         
-                        <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                           <div className="flex items-center gap-2 text-brand-400 text-xs font-bold uppercase tracking-wider mb-2">
                             <MapPin className="w-4 h-4" /> {project.location}
                           </div>
@@ -135,12 +127,7 @@ const RecentWork = () => {
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && !error && projects.length === 0 && (
-          <div className="text-center py-20 bg-stone-50 rounded-lg border-2 border-dashed border-stone-200">
-            <p className="text-stone-500 text-lg font-medium">No projects available at the moment.</p>
-          </div>
-        )}
+
       </div>
 
       {/* Gallery Modal */}

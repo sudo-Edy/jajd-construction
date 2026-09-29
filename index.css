@@ -2,10 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Gentle section snapping: scrolling settles on whole sections instead of
-   leaving a sliver of the next one showing. "proximity" (not "mandatory")
-   keeps it from fighting the user on tall, content-heavy sections. */
-@media (min-width: 0px) {
+/* Anchor jumps land below the fixed header. */
+main > section,
+#home,
+footer {
+  scroll-margin-top: 88px;
+}
+
+/* Gentle section snapping on desktop only: on phones, sections are taller
+   than the screen and snapping fights thumb scrolling. */
+@media (min-width: 1024px) {
   html {
     scroll-snap-type: y proximity;
   }
@@ -14,9 +20,9 @@
   footer {
     scroll-snap-align: start;
     scroll-snap-stop: normal;
-    scroll-margin-top: 88px;
   }
 }
+
 
 @media (max-width: 768px) {
   main > section,

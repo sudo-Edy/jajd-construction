@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { X, CheckCircle2, Home, Building2, ChevronRight, Camera, Calendar, ShieldCheck, Clock, Award, Star, Triangle, Loader2, Paperclip, Trash2, MapPinIcon, QuoteIcon } from 'lucide-react';
+import { X, CheckCircle2, Home, Building2, ChevronRight, Camera, Calendar, ShieldCheck, Award, Star, Triangle, Loader2, Paperclip, Trash2, MapPinIcon, QuoteIcon, Phone, MessageSquare } from 'lucide-react';
+import { CONFIG, SMS_LINK } from '../config';
 import { submitLead, uploadLeadAttachment } from '../utils/api';
 import { compressImage } from '../utils/compression';
 import { analytics } from '../utils/analytics';
@@ -63,7 +64,8 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
   // Reset modal state when opened
   useEffect(() => {
     if (isOpen) {
-      setStep(1);
+      // ZIP already given in the hero? Skip straight to the project questions.
+      setStep(/^\d{5}$/.test(initialZip || '') ? 2 : 1);
       setSubmitted(false);
       setError('');
       setAttachments([]); // Reset attachments
@@ -115,7 +117,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
       return true;
     } catch (err) {
       if (err instanceof z.ZodError) {
-        setError(err.errors[0].message);
+        setError(err.issues[0]?.message ?? 'Please check your details.');
       }
       return false;
     }
@@ -236,8 +238,8 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center px-6"
+    <div
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:px-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
@@ -246,7 +248,7 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
       
       <div 
         ref={modalRef}
-        className="relative bg-white dark:bg-slate-900 w-full max-w-2xl rounded-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 border border-slate-200 dark:border-slate-700"
+        className="relative bg-white dark:bg-slate-900 w-full max-w-2xl rounded-t-2xl sm:rounded-lg overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom sm:zoom-in duration-300 border border-slate-200 dark:border-slate-700"
       >
         <button 
           onClick={onClose}
@@ -257,26 +259,26 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
         </button>
 
         {!submitted ? (
-          <div className="flex flex-col max-h-[90vh]">
+          <div className="flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
             {/* Header - Fixed */}
-            <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
-                <div className="flex gap-2 mb-6" aria-hidden="true">
+            <div className="p-5 pr-14 md:p-8 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
+                <div className="flex gap-2 mb-4 md:mb-6" aria-hidden="true">
                   {[1, 2, 3].map(i => (
                     <div key={i} className={`h-1 flex-1 transition-all duration-500 rounded-full ${step >= i ? 'bg-brand-400' : 'bg-slate-200 dark:bg-slate-700'}`} />
                   ))}
                 </div>
 
                 <div className="space-y-1">
-                  <h2 id="modal-title" className="text-2xl font-bold text-slate-900 dark:text-white">
+                  <h2 id="modal-title" className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
                     {step === 1 && "Start your free estimate"}
                     {step === 2 && flow.headline}
-                    {step === 3 && "Get your free price"}
+                    {step === 3 && "How can we reach you?"}
                   </h2>
                   <div className="flex items-center justify-between">
                     <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                      {step === 1 && "Property type and ZIP to get started."}
+                      {step === 1 && "Property type and ZIP."}
                       {step === 2 && flow.blurb}
-                      {step === 3 && "Where can we send your professional estimate?"}
+                      {step === 3 && "We'll call or text to set up your free visit."}
                     </p>
                     <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded">
                        <ShieldCheck size={14} /> No Obligation
@@ -286,20 +288,19 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-5 md:p-8 custom-scrollbar">
                 {error && (
-                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md flex items-start gap-3">
+                  <div role="alert" className="mb-5 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md flex items-start gap-3">
                     <div className="bg-red-100 dark:bg-red-900/40 p-1 rounded-full text-red-600 dark:text-red-400">
                         <Triangle className="w-4 h-4" />
                     </div>
                     <div>
-                        <h4 className="text-red-800 dark:text-red-300 font-bold text-sm">Action Required</h4>
-                        <p className="text-red-700 dark:text-red-400 text-sm mt-1">{error}</p>
+                        <p className="text-red-700 dark:text-red-400 text-sm font-semibold">{error}</p>
                     </div>
                   </div>
                 )}
 
-                <form id="quote-form" onSubmit={handleSubmit} className="space-y-6">
+                <form id="quote-form" onSubmit={handleSubmit} noValidate className="space-y-6">
                   {initialDetail && (
                     <div className="p-4 bg-navy/5 dark:bg-white/5 border border-navy/10 dark:border-white/10 rounded-xl flex items-center gap-3.5">
                       <div className="w-10 h-10 rounded-lg bg-brand-400 text-navy flex items-center justify-center shrink-0">
@@ -353,11 +354,14 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                         </button>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Project ZIP Code</label>
+                        <label htmlFor="quote-zip" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Project ZIP Code</label>
                         <div className="relative">
-                            <input 
-                            required 
-                            type="text" 
+                            <input
+                            id="quote-zip"
+                            required
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="postal-code"
                             maxLength={5}
                             className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-4 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 transition-all text-lg font-bold text-slate-900 dark:text-white pl-12"
                             value={formData.zip}
@@ -371,7 +375,8 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                       </div>
                       
                       {/* Featured Review */}
-                      <div className="bg-slate-50 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 flex gap-4 items-start">
+                      <div className="hidden sm:flex bg-slate-50 dark:bg-slate-800 p-5 rounded-xl
+ border border-slate-200 dark:border-slate-700 flex gap-4 items-start">
                         <div className="bg-brand-400 text-slate-900 p-2 rounded-full flex-shrink-0">
                             <QuoteIcon size={16} fill="currentColor" />
                         </div>
@@ -395,23 +400,39 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                   )}
 
                   {step === 3 && (
-                    <div className="space-y-6 animate-in slide-in-from-right duration-300">
-                      <div className="bg-emerald-50 dark:bg-emerald-900/10 p-5 rounded-xl border border-emerald-100 dark:border-emerald-900/30 mb-6">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-400 mb-3 flex items-center gap-2">
-                           <Award size={16} /> What You'll Receive:
-                        </h4>
-                        <ul className="space-y-2 text-sm font-medium text-emerald-900 dark:text-emerald-100">
-                           <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Professional On-Site Assessment</li>
-                           <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Detailed Material & Labor Breakdown</li>
-                           <li className="flex items-center gap-3"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Guaranteed Price Valid for 30 Days</li>
-                        </ul>
+                    <div className="space-y-5 animate-in slide-in-from-right duration-300">
+                      {/* Contact first: the only required step-3 fields */}
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label htmlFor="quote-name" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Your Name</label>
+                          <input id="quote-name" required autoComplete="name" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium text-base" placeholder="Jane Smith" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                        </div>
+                        <div className="space-y-2">
+                          <label htmlFor="quote-phone" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Phone Number</label>
+                          <input id="quote-phone" required type="tel" inputMode="tel" autoComplete="tel" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium text-base" placeholder="(402) 555-0123" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label htmlFor="quote-email" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 flex items-center gap-2">
+                          Email <span className="normal-case tracking-normal font-semibold text-[11px] text-slate-400">Optional</span>
+                        </label>
+                        <input id="quote-email" type="email" inputMode="email" autoComplete="email" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium text-base" placeholder="jane@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
                       </div>
 
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Project Details (Optional)</label>
-                        <textarea 
-                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 min-h-[120px] text-sm resize-none text-slate-900 dark:text-white leading-relaxed"
-                          placeholder="Tell us a bit about your project (e.g., 'Painting 3 bedrooms and a hallway' or 'Full exterior repaint'). Big or small, we handle it all."
+                      <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300">
+                        <li className="flex items-center gap-1.5"><CheckCircle2 size={14} /> On-site visit</li>
+                        <li className="flex items-center gap-1.5"><CheckCircle2 size={14} /> Written price</li>
+                        <li className="flex items-center gap-1.5"><CheckCircle2 size={14} /> Price held 30 days</li>
+                      </ul>
+
+                      <div className="space-y-2 pt-1">
+                        <label htmlFor="quote-details" className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 flex items-center gap-2">
+                          Anything else? <span className="normal-case tracking-normal font-semibold text-[11px] text-slate-400">Optional</span>
+                        </label>
+                        <textarea
+                          id="quote-details"
+                          className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 min-h-[88px] text-base md:text-sm resize-none text-slate-900 dark:text-white leading-relaxed"
+                          placeholder="e.g. 3 bedrooms and a hallway"
                           value={formData.description}
                           onChange={(e) => setFormData({...formData, description: e.target.value})}
                         />
@@ -419,26 +440,27 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
 
                       <div className="space-y-3">
                          <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 flex items-center justify-between">
-                            <span>Project Photos (Optional)</span>
+                            <span className="flex items-center gap-2">Photos <span className="normal-case tracking-normal font-semibold text-[11px] text-slate-400">Optional, helps us price it</span></span>
                             <span className="text-[10px] text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">MAX 5</span>
                          </label>
-                         
+
                          {/* File Input */}
                          <div className="relative group">
-                           <input 
-                              type="file" 
-                              multiple 
+                           <input
+                              type="file"
+                              multiple
                               accept="image/*"
                               onChange={handleFileChange}
+                              aria-label="Add project photos"
                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                            />
-                           <div className="flex items-center gap-4 p-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 group-hover:border-brand-400 transition-all">
+                           <div className="flex items-center gap-4 p-4 md:p-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50 group-hover:border-brand-400 transition-all">
                               <div className="bg-slate-100 dark:bg-slate-700 p-3 rounded-full group-hover:bg-brand-400 group-hover:text-slate-900 transition-colors">
                                  <Camera className="w-6 h-6 text-slate-400 dark:text-slate-400 group-hover:text-slate-900" />
                               </div>
                               <div>
-                                 <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors">Click to upload photos</p>
-                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">JPG, PNG, WEBP supported</p>
+                                 <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors">Add photos</p>
+                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Snap a pic or pick from your library</p>
                               </div>
                            </div>
                          </div>
@@ -457,9 +479,10 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                                       <p className="text-[10px] text-slate-400">{(file.size / 1024 / 1024).toFixed(1)} MB</p>
                                    </div>
                                  </div>
-                                 <button 
-                                   type="button" 
+                                 <button
+                                   type="button"
                                    onClick={() => removeAttachment(index)}
+                                   aria-label={`Remove ${file.name}`}
                                    className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-all"
                                  >
                                    <Trash2 className="w-4 h-4" />
@@ -469,29 +492,14 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                            </div>
                          )}
                       </div>
-
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Your Name</label>
-                          <input required className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="John Doe" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Phone Number</label>
-                          <input required type="tel" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="(402) 555-0123" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Email Address</label>
-                        <input required type="email" className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-brand-400 dark:focus:border-brand-400 text-slate-900 dark:text-white font-medium" placeholder="john@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
-                      </div>
                     </div>
                   )}
                 </form>
             </div>
 
             {/* Footer - Fixed */}
-            <div className="p-6 md:p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex-shrink-0 z-10">
-                <div className="flex gap-4">
+            <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex-shrink-0 z-10">
+                <div className="flex gap-3 md:gap-4">
                     {step > 1 && (
                     <button 
                         type="button"
@@ -514,14 +522,14 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
                         </>
                     ) : (
                         <>
-                        {step === 3 ? "Get My Free Estimate" : "Next Step"} <ChevronRight className="w-4 h-4" />
+                        {step === 3 ? "Send My Request" : "Next"} <ChevronRight className="w-4 h-4" />
                         </>
                     )}
                     </button>
                 </div>
                 
                 {/* Trust Badges in Footer for Visibility */}
-                <div className="mt-4 flex justify-center items-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div className="mt-3 md:mt-4 flex justify-center items-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                     <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                         <ShieldCheck size={14} /> Fully Insured
                     </div>
@@ -533,21 +541,41 @@ const QuoteModal: React.FC<QuoteModalProps> = ({ isOpen, onClose, initialZip, pr
             </div>
           </div>
         ) : (
-          <div className="p-16 text-center space-y-6 animate-in fade-in slide-in-from-bottom duration-700 h-full flex flex-col items-center justify-center">
-            <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
+          <div className="px-6 py-12 pb-[calc(3rem+env(safe-area-inset-bottom))] md:p-16 text-center space-y-5 animate-in fade-in slide-in-from-bottom duration-700 h-full flex flex-col items-center justify-center">
+            <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Project Logged!</h2>
-            <p className="text-slate-600 dark:text-slate-300 max-w-sm mx-auto font-medium text-lg leading-relaxed">
-                Thank you, <span className="text-slate-900 dark:text-white font-bold">{formData.name}</span>.<br/>Our master contractor will review your project and contact you within 24 hours.
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">Got it, thanks!</h2>
+            <p className="text-slate-600 dark:text-slate-300 max-w-sm mx-auto font-medium text-base md:text-lg leading-relaxed">
+                <span className="text-slate-900 dark:text-white font-bold">{formData.name.split(' ')[0]}</span>, we'll reach out within 24 hours to set up your free visit.
             </p>
-            <button 
+            <div className="w-full max-w-sm space-y-2.5 pt-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Need it sooner?</p>
+              <div className="grid grid-cols-2 gap-2.5">
+                <a
+                  href={`tel:${CONFIG.PHONE_RAW}`}
+                  onClick={() => analytics.phoneClick('quote_success')}
+                  className="flex items-center justify-center gap-2 min-h-[48px] rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold text-sm text-slate-900 dark:text-white hover:border-brand-400"
+                >
+                  <Phone className="w-4 h-4 text-brand-600" /> Call
+                </a>
+                <a
+                  href={SMS_LINK}
+                  onClick={() => analytics.textClick('quote_success')}
+                  className="flex items-center justify-center gap-2 min-h-[48px] rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold text-sm text-slate-900 dark:text-white hover:border-brand-400"
+                >
+                  <MessageSquare className="w-4 h-4 text-brand-600" /> Text a photo
+                </a>
+              </div>
+            </div>
+            <button
               onClick={onClose}
-              className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-10 py-5 rounded-xl font-bold uppercase tracking-wider hover:bg-brand-400 hover:text-slate-900 transition-all shadow-xl mt-8"
+              className="w-full max-w-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 min-h-[52px] rounded-xl font-bold hover:bg-brand-400 hover:text-slate-900 transition-all shadow-xl"
             >
               Done
             </button>
           </div>
+
         )}
       </div>
     </div>
