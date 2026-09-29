@@ -24,6 +24,8 @@ const NAV_LINKS = [
 
 const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  // Past the hero the mobile bottom bar takes over Call, so the header drops its copy.
+  const [pastHero, setPastHero] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const { isDarkMode, toggleDarkMode } = useTheme();
@@ -31,6 +33,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
+      setPastHero(window.scrollY > window.innerHeight * 0.9);
 
       const scrollPosition = window.scrollY + 150;
 
@@ -155,7 +158,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenQuote }) => {
             href={`tel:${CONFIG.PHONE_RAW}`}
             onClick={() => analytics.phoneClick('header_mobile')}
             aria-label={`Call ${CONFIG.PHONE}`}
-            className="flex items-center gap-1.5 bg-brand-400 text-navy rounded-lg px-3 min-h-[44px] font-bold text-sm active:scale-95 transition-transform"
+            className={`${pastHero ? 'hidden' : 'flex'} items-center gap-1.5 bg-brand-400 text-navy rounded-lg px-3 min-h-[44px] font-bold text-sm active:scale-95 transition-transform`}
           >
             <Phone className="w-4 h-4" aria-hidden="true" /> Call
           </a>

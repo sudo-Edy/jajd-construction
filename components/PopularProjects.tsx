@@ -50,7 +50,7 @@ const PopularProjects: React.FC<PopularProjectsProps> = ({ onSelectProject, onOp
             What do you need done?
           </h2>
           <p className="text-stone-600 dark:text-slate-400 text-base md:text-lg leading-relaxed">
-            Tap a project for a quick estimate built for that job.
+            Tap a project to get your price.
           </p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-xs font-semibold text-stone-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-brand-500" /> Licensed &amp; insured</span>
@@ -142,10 +142,10 @@ const PopularProjects: React.FC<PopularProjectsProps> = ({ onSelectProject, onOp
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-stone-400 dark:text-slate-500 pt-1">
                   Typical range
                 </p>
-                <p className="text-sm font-extrabold text-slate-900 dark:text-white">{project.priceRange}</p>
-                <span className="inline-flex items-center gap-1.5 text-brand-600 dark:text-brand-400 font-bold text-xs pt-1.5 group-hover:gap-2.5 transition-all">
-                  Start estimate <ArrowRight size={12} />
-                </span>
+                <p className="flex items-center justify-between gap-2 text-sm font-extrabold text-slate-900 dark:text-white">
+                  {project.priceRange}
+                  <ArrowRight size={14} className="shrink-0 text-brand-600 dark:text-brand-400 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </p>
               </div>
             </button>
           ))}

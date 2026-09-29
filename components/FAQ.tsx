@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { ArrowRight, ChevronDown, Phone } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { CONFIG } from '../config';
 import { analytics } from '../utils/analytics';
 
-
-interface FAQProps {
-  onOpenQuote: () => void;
-}
 
 const FAQS = [
   {
@@ -51,7 +47,7 @@ const FAQS = [
   },
 ];
 
-const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
+const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   // FAQPage structured data lives statically in index.html (crawler-reliable).
@@ -96,21 +92,17 @@ const FAQ: React.FC<FAQProps> = ({ onOpenQuote }) => {
           })}
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-8 md:pt-10">
+        <p className="pt-8 md:pt-10 text-center text-sm text-stone-500">
+          Still have a question? Call or text{' '}
           <a
             href={`tel:${CONFIG.PHONE_RAW}`}
             onClick={() => analytics.phoneClick('faq')}
-            className="inline-flex items-center justify-center gap-2.5 border-2 border-stone-200 text-slate-900 px-8 py-4 rounded-xl font-bold hover:border-brand-400 transition-all"
+            className="font-semibold text-slate-900 underline underline-offset-2"
           >
-            <Phone className="w-4 h-4 text-brand-600" /> Ask us: {CONFIG.PHONE}
+            {CONFIG.PHONE}
           </a>
-          <button
-            onClick={onOpenQuote}
-            className="inline-flex items-center justify-center gap-3 bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all shadow-lg"
-          >
-            Get a free estimate <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+          .
+        </p>
       </div>
     </section>
   );

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock, CalendarCheck, MapPin, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, CalendarCheck, MapPin } from 'lucide-react';
 import { analytics } from '../utils/analytics';
 
 interface BookingCalendarProps {
-  onOpenQuote: () => void;
   /** Called with an ISO date (YYYY-MM-DD) when the visitor picks a preferred start date. */
   onSelectDate: (date: string) => void;
 }
@@ -20,7 +19,7 @@ const MAX_MONTH = new Date(today.getFullYear() + 1, 11, 1);
 
 type DayStatus = 'past' | 'available' | 'weekend';
 
-const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote, onSelectDate }) => {
+const BookingCalendar: React.FC<BookingCalendarProps> = ({ onSelectDate }) => {
   const [viewMonth, setViewMonth] = useState<Date>(MIN_MONTH);
 
   const year = viewMonth.getFullYear();
@@ -86,12 +85,6 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote, onSelect
                 </span>
               </div>
 
-              <button
-                onClick={onOpenQuote}
-                className="hidden lg:flex w-fit bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all duration-300 shadow-xl items-center gap-3 active:scale-95"
-              >
-                No date in mind? Just get a quote <ArrowRight size={18} />
-              </button>
             </div>
 
             {/* Calendar */}
@@ -171,12 +164,6 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({ onOpenQuote, onSelect
               </div>
             </div>
 
-            <button
-              onClick={onOpenQuote}
-              className="lg:hidden w-full bg-navy text-white px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-[0.98]"
-            >
-              No date in mind? Just get a quote <ArrowRight size={18} />
-            </button>
 
           </div>
         </div>

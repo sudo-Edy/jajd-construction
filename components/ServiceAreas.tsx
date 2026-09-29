@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { CONFIG } from '../config';
-import { analytics } from '../utils/analytics';
 
 // Phones show the closest metro cities first; the full list stays in the DOM
 // (hidden until expanded) so every city is still crawlable for local SEO.
@@ -76,16 +74,7 @@ const ServiceAreas: React.FC = () => {
         )}
 
         <p className="mt-6 text-center text-sm text-stone-500">
-          Town not listed?{' '}
-          <a
-            href={`tel:${CONFIG.PHONE_RAW}`}
-            onClick={() => analytics.phoneClick('service_areas')}
-            className="font-semibold text-slate-900 underline underline-offset-2"
-          >
-            Give us a call
-          </a>
-          , we likely cover it.
-
+          Town not listed? We likely still cover it.
         </p>
       </div>
     </section>

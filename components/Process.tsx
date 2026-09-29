@@ -1,16 +1,7 @@
 import React from 'react';
 import { PROCESS_STEPS } from '../constants';
-import { ArrowRight } from 'lucide-react';
-import { useSiteSettings } from '../contexts/SiteSettingsContext';
-import { SETTING_KEYS } from '../utils/siteSettings';
 
-interface ProcessProps {
-  onOpenQuote: () => void;
-}
-
-const Process: React.FC<ProcessProps> = ({ onOpenQuote }) => {
-  const { get } = useSiteSettings();
-  const ctaBackground = get(SETTING_KEYS.CTA_BACKGROUND, '');
+const Process: React.FC = () => {
 
   return (
     <section id="process" className="py-14 md:py-24 bg-stone-50 overflow-hidden border-b border-stone-200">
@@ -23,7 +14,7 @@ const Process: React.FC<ProcessProps> = ({ onOpenQuote }) => {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 relative mb-10 md:mb-20">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 relative">
           {/* Connecting line (desktop) */}
           <div className="hidden lg:block absolute top-12 left-[12%] w-[76%] h-px bg-slate-200 z-0" />
 
@@ -46,34 +37,6 @@ const Process: React.FC<ProcessProps> = ({ onOpenQuote }) => {
           ))}
         </div>
 
-        <div className="bg-navy rounded-3xl p-7 md:p-14 flex flex-col items-center text-center gap-8 shadow-2xl relative overflow-hidden">
-          {ctaBackground && (
-            <>
-              <img
-                src={ctaBackground}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover opacity-25"
-              />
-              <div className="absolute inset-0 bg-navy/60" />
-            </>
-          )}
-          <div className="absolute top-0 right-0 w-72 h-72 bg-brand-400/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-
-          <div className="relative z-10 space-y-5 md:space-y-7 max-w-3xl">
-            <h3 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">Ready when you are.</h3>
-            <p className="text-white/60 text-base md:text-lg">Free estimate, reply within 24 hours.</p>
-
-
-            <button
-              onClick={onOpenQuote}
-              className="bg-brand-400 text-navy px-8 py-4 rounded-xl font-bold hover:bg-white transition-all shadow-xl flex items-center gap-3 mx-auto active:scale-95"
-            >
-              Get My Free Estimate <ArrowRight size={18} />
-            </button>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -21,7 +21,6 @@ import MobileActionBar from './components/MobileActionBar';
 const AdminPanel = React.lazy(() => import('./components/admin/AdminPanel'));
 import { initAnalytics, analytics } from './utils/analytics';
 import { trackVisit } from './utils/tracking';
-import { MessageSquare, X, ArrowRight, ShieldCheck, Clock } from 'lucide-react';
 
 interface OpenQuoteOptions {
   zip?: string;
@@ -40,8 +39,6 @@ function App() {
   const [preferredDate, setPreferredDate] = useState('');
   const [activeProject, setActiveProject] = useState('');
   const [activeDetail, setActiveDetail] = useState('');
-  const [showExitIntent, setShowExitIntent] = useState(false);
-  const [hasShownExitIntent, setHasShownExitIntent] = useState(false);
 
   // Simple client-side routing, static for the lifetime of the page,
   // but the admin return must come after all hooks run.
@@ -53,7 +50,6 @@ function App() {
     if (opts.project) setActiveProject(opts.project);
     if (opts.detail) setActiveDetail(opts.detail);
     setIsQuoteOpen(true);
-    setShowExitIntent(false);
     analytics.quoteModalOpen(opts.source ?? (opts.date ? 'calendar' : 'cta'));
   };
 
@@ -62,30 +58,6 @@ function App() {
       initAnalytics();
       trackVisit();
     }
-  }, [isAdminRoute]);
-
-  // Exit intent (desktop only, mouse-driven): armed 10s after load, fires at
-  // most once per browser session when the cursor leaves through the top.
-  useEffect(() => {
-    if (isAdminRoute) return;
-    try {
-      if (sessionStorage.getItem('jajd-exit-shown')) return;
-    } catch { /* storage blocked: fall through, still once per page */ }
-    let armed = false;
-    const timer = setTimeout(() => { armed = true; }, 10000);
-
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (armed && e.clientY <= 0) {
-        setShowExitIntent(true);
-        armed = false;
-        try { sessionStorage.setItem('jajd-exit-shown', '1'); } catch { /* ignore */ }
-      }
-    };
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
   }, [isAdminRoute]);
 
   if (isAdminRoute) {
@@ -120,64 +92,17 @@ function App() {
           onSelectProject={(p) => handleOpenQuote({ project: p.quoteType, detail: p.name, source: 'popular_project' })}
           onOpenQuote={() => handleOpenQuote({ source: 'popular_project_other' })}
         />
-        <Testimonials onOpenQuote={() => handleOpenQuote()} />
+        <Testimonials />
         <RecentWork />
-        <Process onOpenQuote={() => handleOpenQuote()} />
+        <Process />
         <About />
         <ServiceAreas />
-        <FAQ onOpenQuote={() => handleOpenQuote()} />
-        <BookingCalendar onSelectDate={(date) => handleOpenQuote({ date })} onOpenQuote={() => handleOpenQuote()} />
+        <FAQ />
+        <BookingCalendar onSelectDate={(date) => handleOpenQuote({ date })} />
         <Journal />
       </main>
 
       <Footer onOpenQuote={() => handleOpenQuote()} />
-
-      {/* Floating CTA (desktop): phones get the bottom action bar instead */}
-      <div className="hidden lg:block fixed bottom-6 right-6 z-[60]">
-        <button
-          onClick={() => handleOpenQuote()}
-          className="flex items-center gap-2.5 bg-brand-400 text-navy px-5 py-3.5 rounded-full font-bold text-sm shadow-card-hover hover:scale-105 active:scale-95 transition-all"
-        >
-          <MessageSquare size={18} />
-          <span className="hidden sm:inline">Free Estimate</span>
-        </button>
-      </div>
-
-      {/* Exit Intent Nudge */}
-      {showExitIntent && !hasShownExitIntent && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-navy/60 backdrop-blur-md">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-8 md:p-12 relative shadow-2xl animate-in zoom-in duration-300 ring-1 ring-slate-900/5">
-            <button
-              onClick={() => { setShowExitIntent(false); setHasShownExitIntent(true); }}
-              aria-label="Close"
-              className="absolute top-5 right-5 text-slate-400 hover:text-slate-900 z-10 p-1"
-            >
-              <X size={22} />
-            </button>
-            <div className="space-y-5 text-center">
-              <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto">
-                 <ShieldCheck className="w-8 h-8 text-brand-600" />
-              </div>
-              <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Before you go, your estimate is free.</h3>
-              <p className="text-stone-500">Takes under a minute. No obligation, and we reply within 24 hours.</p>
-              <button
-                onClick={() => { setHasShownExitIntent(true); handleOpenQuote(); }}
-                className="w-full bg-navy text-white py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all flex items-center justify-center gap-2"
-              >
-                Request My Free Estimate <ArrowRight size={16} />
-              </button>
-              <div className="flex items-center justify-center gap-6 pt-2 text-xs font-semibold text-slate-400">
-                 <div className="flex items-center gap-1.5">
-                   <Clock size={14} className="text-brand-500" /> 24-hour response
-                 </div>
-                 <div className="flex items-center gap-1.5">
-                   <ShieldCheck size={14} className="text-brand-500" /> Licensed &amp; insured
-                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <QuoteModal
         isOpen={isQuoteOpen}

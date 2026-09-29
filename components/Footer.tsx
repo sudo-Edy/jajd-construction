@@ -16,7 +16,7 @@ const Footer: React.FC<FooterProps> = ({ onOpenQuote }) => {
   ].filter(s => s.href && s.href !== '#');
 
   return (
-    <footer id="contact" className="bg-navy pt-14 md:pt-20 pb-28 lg:pb-10 text-white border-t border-white/5">
+    <footer id="contact" className="bg-navy pt-14 md:pt-20 pb-10 text-white border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 md:gap-12 mb-12 md:mb-16">
           {/* Brand column */}

@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TESTIMONIALS } from '../constants';
 import { Testimonial } from '../types';
-import { Star, ArrowRight, Quote, X, PenLine } from 'lucide-react';
+import { Star, Quote, X, PenLine } from 'lucide-react';
 import { CONFIG } from '../config';
-
-interface TestimonialsProps {
-  onOpenQuote?: () => void;
-}
 
 const PLATFORM_LABELS: Record<string, string> = {
   google: 'Google Review',
@@ -29,7 +25,7 @@ const PLATFORM_NAMES: Record<string, string> = {
   thumbtack: 'Thumbtack',
 };
 
-const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
+const Testimonials: React.FC = () => {
   const [activeReview, setActiveReview] = useState<Testimonial | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -198,13 +194,6 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onOpenQuote }) => {
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 md:pt-6 px-6">
-        <button
-          onClick={onOpenQuote}
-          className="inline-flex items-center gap-3 bg-navy text-white px-8 py-4 rounded-xl font-bold hover:bg-brand-400 hover:text-navy transition-all shadow-lg group active:scale-95"
-        >
-          Get My Free Estimate <ArrowRight
- className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-        </button>
         {CONFIG.GOOGLE_REVIEW_URL && CONFIG.GOOGLE_REVIEW_URL !== '#' && (
           <a
             href={CONFIG.GOOGLE_REVIEW_URL}

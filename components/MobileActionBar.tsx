@@ -11,13 +11,18 @@ interface MobileActionBarProps {
  * Thumb-zone action bar for phones: Call / Text / Free Estimate.
  * Most homeowners prefer to call, then text, then a form, so the bar keeps
  * all three one tap away. It slides in once the hero's own estimate card has
- * scrolled away, so it never doubles up with it.
+ * scrolled away and steps aside at the footer, which already lists phone and
+ * text, so it never doubles up with another ask on screen.
  */
 const MobileActionBar: React.FC<MobileActionBarProps> = ({ onOpenQuote }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.9);
+    const onScroll = () => {
+      const footer = document.getElementById('contact');
+      const atFooter = !!footer && footer.getBoundingClientRect().top < window.innerHeight;
+      setVisible(window.scrollY > window.innerHeight * 0.9 && !atFooter);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
